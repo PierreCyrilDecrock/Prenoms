@@ -6,7 +6,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | --- | --------------------------------------- | -------- | ---------- | --------- | -------------------------------------------------- |
 | 1   | Initialisation et déploiement           | terminée | 2026-11-12 | `d282967` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 2   | Contrats du cœur                        | terminée | 2026-11-12 | `9b7f058` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 3   | Pipeline de données INSEE               | à faire  |            |           |                                                    |
+| 3   | Pipeline de données INSEE               | terminée | 2026-11-12 | `18153cf` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 4   | Source INSEE dans le navigateur         | à faire  |            |           |                                                    |
 | 5   | Moteur de requête                       | à faire  |            |           |                                                    |
 | 6   | Filtres de la v1                        | à faire  |            |           |                                                    |
@@ -44,3 +44,18 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
   modules arrivent (étapes 4, 6 et 7).
 - Workflow : un commit qui ne modifie que `PROGRESS.md` ne redéploie plus, pour que le SHA de
   `#/dev` reste celui de l'étape.
+
+### Étape 3 – 2026-11-12
+
+- Commit `18153cf`, workflow vert. Vérifié par curl : `version.json` renvoie ce SHA,
+  l'accueil et `data/insee.json` répondent 200.
+- Source : `prenoms-2023-nat.csv` (naissances 1900–2023), seul fichier national proposé sur
+  la page 8205621. Effectifs non arrondis dans cette édition.
+- Résultat : 32 157 prénoms, 86 102 834 naissances, 3,26 Mo brut, 976 Ko gzip.
+- Exclusions comptées dans `public/data/insee.report.json` : 39 704 lignes d'année inconnue
+  (926 369 naissances), 248 lignes `_PRENOMS_RARES` (1 799 189 naissances), 2 123 prénoms qui
+  n'ont aucune année connue.
+- Choix : 3 486 graphies ne différant que par les accents (LEA, LÉA) sont fusionnées sous la
+  plus fréquente, puisque l'identifiant d'un prénom est sa forme sans accents.
+- Environnement cloud « Prenoms » créé pour autoriser `www.insee.fr` et
+  `pierrecyrildecrock.github.io` : l'URL publiée est désormais vérifiable depuis la session.
