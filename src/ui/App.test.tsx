@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { App } from '@/ui/App';
 import { parseHashPath } from '@/ui/useHashRoute';
 
@@ -38,6 +38,18 @@ describe('App', () => {
     expect(screen.getByTestId('build-sha')).not.toBeEmptyDOMElement();
     expect(screen.getByTestId('build-date')).toHaveAttribute('dateTime');
     expect(screen.getByRole('heading', { name: /Étape 1/ })).toBeVisible();
+  });
+
+  it('étape 2 : liste les registres et normalise un prénom en direct', () => {
+    window.location.hash = '#/dev';
+    render(<App />);
+    for (const kind of ['source', 'champ calculé', 'filtre', 'tri']) {
+      expect(screen.getByTestId(`registry-${kind}`)).toHaveTextContent('example');
+    }
+    fireEvent.change(screen.getByLabelText('Prénom à normaliser'), {
+      target: { value: ' ÉLODIE  Noël ' },
+    });
+    expect(screen.getByTestId('normalized')).toHaveTextContent('[elodie noel]');
   });
 
   it('réagit au changement de hash', async () => {

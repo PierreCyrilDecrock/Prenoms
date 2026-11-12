@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { buildInfo } from '@/ui/buildInfo';
+import { DevStep2 } from '@/ui/DevStep2';
 import { colorTokens } from '@/ui/tokens';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -124,6 +125,10 @@ export function DevPage() {
             </ul>
           </div>
         </div>
+      </Section>
+
+      <Section title="Étape 2 – Contrats du cœur">
+        <DevStep2 />
       </Section>
     </main>
   );

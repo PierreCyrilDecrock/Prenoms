@@ -3,6 +3,8 @@ name: Déploiement GitHub Pages
 on:
   push:
     branches: [main]
+    # Un commit qui ne touche que PROGRESS.md ne redéploie pas : le SHA de #/dev reste celui de l'étape.
+    paths-ignore: [PROGRESS.md]
   workflow_dispatch:
 
 permissions:
