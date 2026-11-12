@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+*.local
+.DS_Store
+# Fichiers sources bruts (trop volumineux, non publiés)
+data/raw/*
+!data/raw/.gitkeep
