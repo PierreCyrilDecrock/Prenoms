@@ -15,8 +15,37 @@ describe('parseHashPath', () => {
   });
 });
 
+const report = {
+  meta: {
+    formatVersion: 1,
+    generatedAt: '2026-01-01T00:00:00.000Z',
+    sourceFile: 'exemple.csv',
+    yearMin: 1900,
+    yearMax: 2023,
+    nameCount: 1234,
+    totalBirths: 56789,
+  },
+  csv: { rows: 100, births: 60000, distinctNames: 1300 },
+  excluded: {
+    unknownYear: { rows: 7, births: 70 },
+    rareNames: { rows: 3, births: 30 },
+    invalid: { rows: 0, births: 0 },
+    namesWithoutKnownYear: 5,
+  },
+  mergedVariants: 61,
+  size: { raw: 3 * 1024 * 1024, gzip: 1024 * 1024 },
+};
+
 describe('App', () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(JSON.stringify(report))),
+    );
+  });
+
   afterEach(() => {
+    vi.unstubAllGlobals();
     window.location.hash = '';
   });
 
@@ -59,5 +88,30 @@ describe('App', () => {
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
     expect(screen.getByText('Page de diagnostic')).toBeVisible();
+  });
+
+  it('étape 3 : affiche les statistiques du rapport INSEE', async () => {
+    window.location.hash = '#/dev';
+    render(<App />);
+    const section = await screen.findByTestId('insee-report');
+    expect(section).toHaveTextContent(/1\s?234/);
+    expect(section).toHaveTextContent('1900–2023');
+    expect(section).toHaveTextContent('3 Mo');
+    expect(section).toHaveTextContent('1 Mo');
+    expect(section).toHaveTextContent('10 sur 100');
+    expect(screen.getByRole('link', { name: 'Ouvrir data/insee.json' })).toHaveAttribute(
+      'href',
+      '/data/insee.json',
+    );
+  });
+
+  it('étape 3 : signale un rapport introuvable', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('', { status: 404 })),
+    );
+    window.location.hash = '#/dev';
+    render(<App />);
+    expect(await screen.findByRole('alert')).toHaveTextContent('HTTP 404');
   });
 });

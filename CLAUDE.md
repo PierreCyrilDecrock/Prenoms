@@ -39,14 +39,16 @@ docs/        plan et guides d'extension
 
 ## Commandes
 
-| Commande          | Effet                                              |
-| ----------------- | -------------------------------------------------- |
-| `npm run dev`     | Serveur de développement                           |
-| `npm run build`   | Vérification des types puis build dans `dist/`     |
-| `npm run preview` | Sert `dist/` (ajouter `--base /Prenoms/` au build) |
-| `npm test`        | Tests Vitest + Testing Library                     |
-| `npm run lint`    | ESLint + vérification Prettier                     |
-| `npm run format`  | Formate avec Prettier                              |
+| Commande                | Effet                                                |
+| ----------------------- | ---------------------------------------------------- |
+| `npm run dev`           | Serveur de développement                             |
+| `npm run build`         | Vérification des types puis build dans `dist/`       |
+| `npm run preview`       | Sert `dist/` (ajouter `--base /Prenoms/` au build)   |
+| `npm test`              | Tests Vitest + Testing Library                       |
+| `npm run lint`          | ESLint + vérification Prettier                       |
+| `npm run format`        | Formate avec Prettier                                |
+| `npm run build:data`    | Régénère `public/data/insee.json` depuis `data/raw/` |
+| `npm run validate:data` | Vérifie que les sommes du JSON égalent celles du CSV |
 
 Test local sous sous-chemin : `VITE_BASE=/Prenoms/ npm run build && VITE_BASE=/Prenoms/ npm run preview`.
 
@@ -70,6 +72,19 @@ Autres règles :
 - Chaque source range ses données sous sa propre clé dans `facts`.
 - Un filtre ou un tri déclare les sources requises (`requires`).
 - `src/ui` ne contient aucune logique métier.
+
+## Données INSEE
+
+- Source : fichier national `prenoms-2023-nat.csv` (naissances 1900–2023), téléchargé depuis
+  https://www.insee.fr/fr/statistiques/8205621 et décompressé dans `data/raw/` (ignoré par git).
+- `npm run build:data` écrit `public/data/insee.json` (format décrit dans
+  `src/sources/insee/format.ts`) et `public/data/insee.report.json` (exclusions, tailles). Ces
+  deux fichiers sont commités : le build en ligne ne régénère pas les données.
+- Les lignes d'année inconnue (`XXXX`) et le regroupement `_PRENOMS_RARES` sont exclus et comptés
+  dans le rapport. Les graphies qui ne diffèrent que par les accents (LEA, LÉA) sont fusionnées
+  sous la plus fréquente.
+- Les scripts s'exécutent avec Node 22 sans transpilation : leurs imports relatifs portent
+  l'extension `.ts`.
 
 ## Jetons de design
 

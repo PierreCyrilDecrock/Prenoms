@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "formatVersion": 1,
+    "generatedAt": "2026-11-12T23:52:15.906Z",
+    "sourceFile": "prenoms-2023-nat.csv",
+    "yearMin": 1900,
+    "yearMax": 2023,
+    "nameCount": 32157,
+    "totalBirths": 86102834
+  },
+  "csv": {
+    "rows": 719160,
+    "births": 88828392,
+    "distinctNames": 37766
+  },
+  "excluded": {
+    "unknownYear": {
+      "rows": 39704,
+      "births": 926369
+    },
+    "rareNames": {
+      "rows": 248,
+      "births": 1799189
+    },
+    "invalid": {
+      "rows": 0,
+      "births": 0
+    },
+    "namesWithoutKnownYear": 2123
+  },
+  "mergedVariants": 3486,
+  "size": {
+    "raw": 3413416,
+    "gzip": 999522
+  }
+}
