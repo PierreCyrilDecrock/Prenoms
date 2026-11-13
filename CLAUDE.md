@@ -64,6 +64,10 @@ On étend l'application en **ajoutant un fichier** dans `src/sources/`, `src/der
 Ne modifie jamais `src/core` pour ajouter une source, un filtre ou un tri : si c'est inévitable,
 dis-le clairement et corrige l'architecture plutôt que de la contourner.
 
+Guides d'extension (à suivre pour toute évolution) : `docs/ajouter-une-source.md`,
+`docs/ajouter-un-filtre.md`, `docs/ajouter-un-tri.md`. Leurs exemples ont été vérifiés en les
+recopiant tels quels à l'étape 13 : les garder compilables si un contrat change.
+
 Contrats (`src/core`, importés depuis `@/core`) : `NameEntry`, `DataSource`/`SourceData`,
 `DerivedField`, `Filter<P>`, `Sort`, `normalizeName()`. Chaque fichier de module expose son objet
 en `export default` avec un `id` unique ; un id manquant ou en double lève une `RegistryError` au

@@ -100,6 +100,12 @@ contrats, et chaque module s'inscrit dans un registre qui le découvre automatiq
 | un filtre        | `src/filters/<id>.tsx`      |
 | un tri           | `src/sorts/<id>.ts`         |
 
+Guides d'extension, chacun avec le contrat, un exemple complet et la liste des fichiers à créer :
+
+- [Ajouter une source de données](docs/ajouter-une-source.md) ;
+- [Ajouter un filtre](docs/ajouter-un-filtre.md) ;
+- [Ajouter un tri](docs/ajouter-un-tri.md).
+
 Documentation :
 
 - [docs/PLAN.md](docs/PLAN.md) : feuille de route et choix techniques ;

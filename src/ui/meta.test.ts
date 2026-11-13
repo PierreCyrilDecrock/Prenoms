@@ -71,4 +71,17 @@ describe('métadonnées de publication', () => {
     expect(links.length).toBeGreaterThan(8);
     for (const link of links) expect(existsSync(link), link).toBe(true);
   });
+
+  it.each(['ajouter-une-source.md', 'ajouter-un-filtre.md', 'ajouter-un-tri.md'])(
+    'le guide %s existe, est relié au README et ses liens internes mènent à des fichiers',
+    (guide) => {
+      expect(readFileSync('README.md', 'utf8')).toContain(`(docs/${guide})`);
+      const text = readFileSync(`docs/${guide}`, 'utf8');
+      for (const section of ['## Fichiers à créer', '## Contrat', '## Exemple complet']) {
+        expect(text).toContain(section);
+      }
+      const links = [...text.matchAll(/\]\((?!https?:)([^)#]+)\)/g)].map((match) => match[1]!);
+      for (const link of links) expect(existsSync(`docs/${link}`), link).toBe(true);
+    },
+  );
 });
