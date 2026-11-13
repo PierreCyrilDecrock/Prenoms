@@ -13,7 +13,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | 7   | Tris de la v1                           | terminée | 2026-11-13 | `b4e595a` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 8   | Interface : structure et lisibilité     | terminée | 2026-11-13 | `7e3956d` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 9   | Animations et interactions              | terminée | 2026-11-13 | `98fa48d` | https://pierrecyrildecrock.github.io/Prenoms/      |
-| 10  | État dans l'URL, favoris, export        | à faire  |            |           |                                                    |
+| 10  | État dans l'URL, favoris, export        | terminée | 2026-11-13 | `cc6362e` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 11  | Tests, performance, accessibilité       | à faire  |            |           |                                                    |
 | 12  | Finitions de publication                | à faire  |            |           |                                                    |
 | 13  | Documentation et preuve d'extensibilité | à faire  |            |           |                                                    |
@@ -182,4 +182,27 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
   - les pastilles voisines se replacent sans glisser quand l'une disparaît ;
   - les courbes « se tracent » par un dévoilement en `transform`, pas par `stroke-dashoffset` ;
   - bouton « Copier le prénom » placé sur la fiche.
+- `src/core` non modifié à cette étape.
+
+### Étape 10 – 2026-11-13
+
+- Commit `cc6362e`, workflow vert. Vérifié sur l'URL publiée avec un navigateur automatisé :
+  `version.json` renvoie ce SHA ; une vue filtrée et triée, rouverte par son URL dans un
+  contexte vierge (équivalent d'un onglet privé), est strictement identique ; les paramètres
+  invalides sont ignorés et l'URL remise au propre ; 3 frappes n'ajoutent aucune entrée
+  d'historique, 3 filtres et 1 tri en ajoutent 4 ; les favoris survivent au rechargement ; le CSV
+  téléchargé commence par un BOM UTF-8 ; le JSON contient les séries annuelles.
+- Format du hash : `#/?q=mar&m=c&f.gender=f&f.length=3-6&s=alphabetical&d=asc`.
+- Choix et écarts :
+  - `pushState` pour mode, tri, sens et filtre ajouté ou retiré ; `replaceState` pour le texte
+    recherché et pour la valeur d'un filtre déjà actif (sinon chaque chiffre tapé dans un champ
+    de filtre créerait une entrée d'historique) ;
+  - le lien de retour d'une fiche porte la vue en cours ; ouvrir `#/` nu remet la vue à zéro ;
+  - les pastilles suivent l'ordre du registre, pas l'ordre d'activation, pour qu'une vue
+    rouverte par lien soit identique ;
+  - CSV : séparateur `;` et décimales à virgule (Excel en français), une colonne par champ
+    calculé et par fait simple ; les séries annuelles ne sont que dans le JSON ;
+  - nouveau groupe « Favoris » dans le panneau de filtres.
+- Non vérifié : l'ouverture du CSV dans Excel lui-même (seuls le BOM et le contenu du fichier
+  l'ont été).
 - `src/core` non modifié à cette étape.
