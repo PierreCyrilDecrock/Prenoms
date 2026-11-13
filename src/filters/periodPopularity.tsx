@@ -30,6 +30,11 @@ const periodPopularity: Filter<Params> = {
     const births = birthsBetween(facts, params.from ?? -Infinity, params.to ?? Infinity);
     return births >= (params.min ?? 0);
   },
+  describe: (params) => {
+    const years = getInseeYearRange();
+    const min = (params.min ?? 0).toLocaleString('fr-FR');
+    return `au moins ${min} entre ${params.from ?? years.min} et ${params.to ?? years.max}`;
+  },
   Control: ({ value, onChange }) => {
     const years = getInseeYearRange();
     return (

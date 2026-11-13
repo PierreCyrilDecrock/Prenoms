@@ -24,6 +24,7 @@ const trend: Filter<Params> = {
     if (!facts) return false;
     return params.value === 'up' ? facts.recent > facts.previous : facts.recent < facts.previous;
   },
+  describe: (params) => ({ '': '', up: 'en hausse', down: 'en baisse' })[params.value],
   Control: ({ value, onChange }) => (
     <ChoiceGroup
       legend={`Sur les ${TREND_WINDOW} dernières années, par rapport aux ${TREND_WINDOW} précédentes`}

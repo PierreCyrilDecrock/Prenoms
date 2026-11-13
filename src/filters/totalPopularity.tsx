@@ -1,6 +1,7 @@
 import type { Filter } from '@/core';
 import { getInseeFacts, INSEE_SOURCE_ID } from '@/sources/insee/facts';
 import {
+  describeRange,
   EMPTY_RANGE,
   formatRange,
   inRange,
@@ -19,6 +20,7 @@ const totalPopularity: Filter<NumberRange> = {
   defaultParams: EMPTY_RANGE,
   isActive: isRangeActive,
   test: (entry, params) => inRange(getInseeFacts(entry)?.total ?? 0, params),
+  describe: (params) => describeRange(params, 'naissances'),
   Control: ({ value, onChange }) => (
     <FieldRow>
       <NumberField

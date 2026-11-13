@@ -15,6 +15,7 @@ const compound: Filter<Params> = {
   defaultParams: { value: '' },
   isActive: (params) => params.value !== '',
   test: (entry, params) => (entry.derived.isCompound === true) === (params.value === 'only'),
+  describe: (params) => ({ '': '', only: 'uniquement', exclude: 'exclus' })[params.value],
   Control: ({ value, onChange }) => (
     <ChoiceGroup
       legend="Prénoms composés"

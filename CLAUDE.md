@@ -128,6 +128,22 @@ Les 6 tris de la v1 sont dans `src/sorts/` (un fichier `.ts` chacun, tests dans 
 décrit l'ordre croissant ; le sens et le départage alphabétique sont gérés par `runQuery`.
 `trend` trie sur la variation en nombre de naissances (`recent − previous`).
 
+## Interface
+
+- Routes (hash) : `#/` application (`src/ui/explorer/ExplorerPage.tsx`), `#/prenom/<id>` fiche
+  (`src/ui/NamePage.tsx`), `#/dev` diagnostic.
+- `src/state/queryStore.ts` porte la requête en cours (recherche, mode, paramètres des filtres,
+  tri, sens) ; `useResults()` exécute `runQuery` et renvoie les résultats et les filtres actifs.
+- Le panneau de filtres, les pastilles et le sélecteur de tri sont générés depuis les registres ;
+  un module dont une source requise n'est pas chargée est masqué. La pastille d'un filtre affiche
+  `filter.describe(params)` (méthode optionnelle du contrat `Filter`).
+- Mobile (moins de 1024 px) : filtres dans un tiroir plein écran ; desktop : barre latérale fixe.
+- La liste est virtualisée sur le défilement de la page (TanStack Virtual, lignes de 72 px).
+- `src/ui/inseeView.ts` est le seul fichier de l'interface qui lit les faits INSEE : il fournit
+  aux lignes et à la fiche des nombres prêts à afficher.
+- Répartition filles/garçons : toujours une barre bicolore ET un libellé ; sur la courbe, les
+  deux sexes se distinguent par la couleur et par le tracé (plein ou pointillé).
+
 ## Jetons de design
 
 Définis en variables CSS dans `src/index.css` et exposés à Tailwind par `@theme`

@@ -33,6 +33,13 @@ const letters: Filter<Params> = {
   test: (entry, params) =>
     lettersOf(params.include).every((letter) => entry.id.includes(letter)) &&
     !lettersOf(params.exclude).some((letter) => entry.id.includes(letter)),
+  describe: (params) =>
+    [
+      lettersOf(params.include).length > 0 && `avec ${lettersOf(params.include).join(', ')}`,
+      lettersOf(params.exclude).length > 0 && `sans ${lettersOf(params.exclude).join(', ')}`,
+    ]
+      .filter(Boolean)
+      .join(' · '),
   Control: ({ value, onChange }) => (
     <FieldRow>
       <TextField

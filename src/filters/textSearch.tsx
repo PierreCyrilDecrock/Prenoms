@@ -20,7 +20,7 @@ function normalized(raw: string): string {
 /** Recherche texte dans le prénom, insensible à la casse et aux accents. */
 const textSearch: Filter<Params> = {
   id: 'textSearch',
-  label: 'Texte du prénom',
+  label: 'Texte supplémentaire',
   group: 'Texte',
   defaultParams: { text: '', mode: 'startsWith' },
   isActive: (params) => normalized(params.text) !== '',
@@ -30,6 +30,8 @@ const textSearch: Filter<Params> = {
     if (params.mode === 'endsWith') return entry.id.endsWith(text);
     return entry.id.startsWith(text);
   },
+  describe: (params) =>
+    `${{ startsWith: 'commence par', contains: 'contient', endsWith: 'finit par' }[params.mode]} « ${params.text.trim()} »`,
   Control: ({ value, onChange }) => (
     <div className="flex flex-col gap-2">
       <TextField

@@ -1,5 +1,6 @@
 import type { Filter } from '@/core';
 import {
+  describeRange,
   EMPTY_RANGE,
   formatRange,
   inRange,
@@ -17,6 +18,7 @@ const length: Filter<NumberRange> = {
   defaultParams: EMPTY_RANGE,
   isActive: isRangeActive,
   test: (entry, params) => inRange(entry.derived.length as number, params),
+  describe: (params) => describeRange(params, 'lettres'),
   Control: ({ value, onChange }) => (
     <FieldRow>
       <NumberField

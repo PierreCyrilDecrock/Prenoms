@@ -1,6 +1,7 @@
 import type { Filter } from '@/core';
 import { getInseeFacts, getInseeYearRange, INSEE_SOURCE_ID } from '@/sources/insee/facts';
 import {
+  describeRange,
   EMPTY_RANGE,
   formatRange,
   inRange,
@@ -22,6 +23,7 @@ const peakPeriod: Filter<NumberRange> = {
     const facts = getInseeFacts(entry);
     return facts !== undefined && inRange(facts.peakYear, params);
   },
+  describe: (params) => describeRange(params, '', String),
   Control: ({ value, onChange }) => {
     const years = getInseeYearRange();
     const decades: number[] = [];

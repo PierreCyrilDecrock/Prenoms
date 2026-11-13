@@ -19,6 +19,8 @@ export interface Filter<P> {
   /** Faux quand les paramètres ne filtrent rien : le filtre est alors ignoré. */
   isActive(params: P): boolean;
   test(entry: NameEntry, params: P): boolean;
+  /** Résumé court des paramètres actifs, affiché dans la pastille du filtre. */
+  describe?(params: P): string;
   Control: ComponentType<FilterControlProps<P>>;
   toUrl(params: P): string;
   /** Ne lève jamais : une valeur invalide donne defaultParams. */

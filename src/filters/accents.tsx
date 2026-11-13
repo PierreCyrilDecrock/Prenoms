@@ -15,6 +15,7 @@ const accents: Filter<Params> = {
   defaultParams: { value: '' },
   isActive: (params) => params.value !== '',
   test: (entry, params) => (entry.derived.hasAccent === true) === (params.value === 'with'),
+  describe: (params) => ({ '': '', with: 'avec', without: 'sans' })[params.value],
   Control: ({ value, onChange }) => (
     <ChoiceGroup
       legend="Accents"

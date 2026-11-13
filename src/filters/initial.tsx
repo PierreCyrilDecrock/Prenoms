@@ -20,6 +20,7 @@ const initial: Filter<Params> = {
   defaultParams: { letters: [] },
   isActive: (params) => params.letters.length > 0,
   test: (entry, params) => params.letters.includes(entry.derived.initial as string),
+  describe: (params) => params.letters.join(', '),
   Control: ({ value, onChange }) => (
     <ToggleGroup
       legend="Initiales"

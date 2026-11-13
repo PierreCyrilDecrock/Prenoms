@@ -6,6 +6,7 @@ import { DevStep4 } from '@/ui/DevStep4';
 import { DevStep5 } from '@/ui/DevStep5';
 import { DevStep6 } from '@/ui/DevStep6';
 import { DevStep7 } from '@/ui/DevStep7';
+import { DevStep8 } from '@/ui/DevStep8';
 import { colorTokens } from '@/ui/tokens';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -43,7 +44,7 @@ export function DevPage() {
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <header className="flex flex-col gap-2">
         <a href="#/" className="inline-flex min-h-11 items-center self-start text-accent underline">
-          ← Accueil
+          ← Application
         </a>
         <h1 className="text-3xl font-semibold tracking-tight">{buildInfo.projectName}</h1>
         <p className="text-ink-muted">Page de diagnostic</p>
@@ -154,6 +155,10 @@ export function DevPage() {
 
       <Section title="Étape 7 – Tris de la v1">
         <DevStep7 />
+      </Section>
+
+      <Section title="Étape 8 – Interface : structure et lisibilité">
+        <DevStep8 />
       </Section>
     </main>
   );

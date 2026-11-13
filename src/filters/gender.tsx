@@ -26,6 +26,7 @@ const gender: Filter<Params> = {
     if (params.value === 'f') return share > 1 - MIXED_MIN_SHARE;
     return share >= MIXED_MIN_SHARE && share <= 1 - MIXED_MIN_SHARE;
   },
+  describe: (params) => ({ '': '', f: 'filles', m: 'garçons', x: 'mixtes' })[params.value],
   Control: ({ value, onChange }) => (
     <ChoiceGroup
       legend="Prénoms donnés"

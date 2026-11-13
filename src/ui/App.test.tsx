@@ -55,17 +55,6 @@ describe('App', () => {
     window.location.hash = '';
   });
 
-  it("affiche la page d'accueil par défaut", () => {
-    render(<App />);
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Explorateur de prénoms' }),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Page de diagnostic' })).toHaveAttribute(
-      'href',
-      '#/dev',
-    );
-  });
-
   it('affiche la page de diagnostic sur #/dev, avec le SHA et la date de build', () => {
     window.location.hash = '#/dev';
     render(<App />);
@@ -73,6 +62,29 @@ describe('App', () => {
     expect(screen.getByTestId('build-sha')).not.toBeEmptyDOMElement();
     expect(screen.getByTestId('build-date')).toHaveAttribute('dateTime');
     expect(screen.getByRole('heading', { name: /Étape 1/ })).toBeVisible();
+  });
+
+  it('étape 2 : liste les registres et normalise un prénom en direct', () => {
+    window.location.hash = '#/dev';
+    render(<App />);
+    expect(screen.getByTestId('registry-source')).toHaveTextContent('insee');
+    expect(screen.getByTestId('registry-champ calculé')).toHaveTextContent('femaleShare');
+    expect(screen.getByTestId('registry-filtre')).toHaveTextContent('textSearch');
+    expect(screen.getByTestId('registry-tri')).toHaveTextContent('alphabetical');
+    fireEvent.change(screen.getByLabelText('Prénom à normaliser'), {
+      target: { value: ' ÉLODIE  Noël ' },
+    });
+    expect(screen.getByTestId('normalized')).toHaveTextContent('[elodie noel]');
+  });
+
+  it('réagit au changement de hash', async () => {
+    render(<App />);
+    expect(screen.getByRole('searchbox', { name: 'Rechercher un prénom' })).toBeInTheDocument();
+    await act(async () => {
+      window.location.hash = '#/dev';
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(screen.getByText('Page de diagnostic')).toBeVisible();
   });
 
   it('étape 2 : liste les registres et normalise un prénom en direct', () => {
@@ -123,16 +135,12 @@ describe('App', () => {
   });
 
   it('étape 4 : charge les prénoms au démarrage et les affiche', async () => {
+    window.location.hash = '#/dev';
     render(<App />);
-    expect(await screen.findByText('3 prénoms chargés.')).toBeInTheDocument();
-    await act(async () => {
-      window.location.hash = '#/dev';
-      window.dispatchEvent(new HashChangeEvent('hashchange'));
-    });
+    await screen.findByText('Échantillon de 3 prénoms');
     expect(screen.getByTestId('load-status')).toHaveTextContent('3 prénoms chargés');
     expect(screen.getByTestId('origin-insee')).toHaveTextContent('réseau');
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
-    expect(screen.getByText('Échantillon de 3 prénoms')).toBeInTheDocument();
     expect(screen.getByText(/"femaleShare":0.769/)).toBeInTheDocument();
   });
 
@@ -208,5 +216,20 @@ describe('App', () => {
     expect(names()).toEqual(['Camille', 'Léa', 'Jean-Baptiste']);
     fireEvent.click(screen.getByLabelText('Croissant'));
     expect(names()).toEqual(['Jean-Baptiste', 'Léa', 'Camille']);
+  });
+
+  it('étape 8 : indique la mise en page et propose des fiches d’exemple', async () => {
+    window.location.hash = '#/dev';
+    render(<App />);
+    await screen.findByText('Échantillon de 3 prénoms');
+    expect(screen.getByTestId('layout-mode')).toHaveTextContent('téléphone');
+    expect(screen.getByRole('link', { name: 'Camille' })).toHaveAttribute(
+      'href',
+      '#/prenom/camille',
+    );
+    expect(screen.getByRole('link', { name: 'Jean-Baptiste' })).toHaveAttribute(
+      'href',
+      '#/prenom/jean-baptiste',
+    );
   });
 });

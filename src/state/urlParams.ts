@@ -39,3 +39,18 @@ export function parseChoice<T extends string>(
 ): T {
   return (allowed as readonly string[]).includes(value) ? (value as T) : fallback;
 }
+
+const int = (value: number) => value.toLocaleString('fr-FR');
+
+/** Résumé lisible d'un intervalle : « 3 à 6 lettres », « au moins 3 lettres », « au plus 6 lettres ». */
+export function describeRange(range: NumberRange, unit = '', format: (n: number) => string = int) {
+  const suffix = unit ? ` ${unit}` : '';
+  if (range.min !== null && range.max !== null) {
+    return range.min === range.max
+      ? `${format(range.min)}${suffix}`
+      : `${format(range.min)} à ${format(range.max)}${suffix}`;
+  }
+  if (range.min !== null) return `au moins ${format(range.min)}${suffix}`;
+  if (range.max !== null) return `au plus ${format(range.max)}${suffix}`;
+  return '';
+}
