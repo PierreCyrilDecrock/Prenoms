@@ -7,7 +7,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | 1   | Initialisation et déploiement           | terminée | 2026-11-12 | `d282967` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 2   | Contrats du cœur                        | terminée | 2026-11-12 | `9b7f058` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 3   | Pipeline de données INSEE               | terminée | 2026-11-12 | `18153cf` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 4   | Source INSEE dans le navigateur         | à faire  |            |           |                                                    |
+| 4   | Source INSEE dans le navigateur         | terminée | 2026-11-13 | `33f23a6` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 5   | Moteur de requête                       | à faire  |            |           |                                                    |
 | 6   | Filtres de la v1                        | à faire  |            |           |                                                    |
 | 7   | Tris de la v1                           | à faire  |            |           |                                                    |
@@ -59,3 +59,18 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
   plus fréquente, puisque l'identifiant d'un prénom est sa forme sans accents.
 - Environnement cloud « Prenoms » créé pour autoriser `www.insee.fr` et
   `pierrecyrildecrock.github.io` : l'URL publiée est désormais vérifiable depuis la session.
+
+### Étape 4 – 2026-11-13
+
+- Commit `33f23a6`, workflow vert. Vérifié sur l'URL publiée avec un navigateur automatisé :
+  `version.json` renvoie ce SHA, la progression avance de 0 à 100 %, 32 157 prénoms sont chargés
+  (752 ms par le réseau, 236 ms depuis le cache après rechargement).
+- Invalidation du cache : la source lit d'abord `insee.report.json` (bloc meta), et ne
+  retélécharge `insee.json` que si la version de format ou la date de génération a changé.
+- Ajouts au cœur, hors contrat d'origine : `mergeSources()` (fusion et champs calculés) et la
+  méthode optionnelle `DataSource.clearCache()`, utilisée par le bouton « Vider le cache et
+  recharger » de `#/dev`.
+- Choix : `length` compte les lettres sans tiret, espace ni apostrophe ; `hasAccent` porte sur
+  la forme affichée ; `peakYear` retient l'année la plus ancienne à égalité.
+- Source et champ calculé factices `example` retirés ; restent le filtre et le tri factices.
+- Compteur temporaire sur l'accueil, à retirer à l'étape 8.
