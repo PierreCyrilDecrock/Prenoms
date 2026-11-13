@@ -2,6 +2,8 @@ export type { AnyFilter, Filter, FilterControlProps } from './filter';
 export { mergeSources } from './mergeSources';
 export type { LoadedSource } from './mergeSources';
 export { normalizeName } from './normalizeName';
+export { activeFilters, runQuery } from './query';
+export type { Query, QueryContext, SearchMode, SortDirection } from './query';
 export { derivedFields, filters, sorts, sources } from './registries';
 export { createRegistry, RegistryError } from './registry';
 export type { Registry } from './registry';

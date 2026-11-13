@@ -98,6 +98,15 @@ Autres règles :
 - Un champ calculé qui lit une source déclare `requires` et importe ses types depuis le dossier
   de cette source.
 
+## Moteur de requête
+
+`runQuery(entries, query, context)` dans `src/core/query.ts` est une fonction pure : recherche
+(`startsWith`, `contains`, `endsWith`, sur l'`id` normalisé), filtres actifs du registre, puis tri
+avec départage alphabétique. `context` fournit les registres et `loadedSources` ; un filtre ou un
+tri inconnu, inactif ou dont une source requise manque est ignoré. Les prédicats sont ordonnés du
+plus sélectif au moins sélectif d'après un échantillon. Budget : moins de 100 ms pour 5 filtres
+sur 50 000 entrées (testé).
+
 ## Jetons de design
 
 Définis en variables CSS dans `src/index.css` et exposés à Tailwind par `@theme`

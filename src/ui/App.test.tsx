@@ -134,4 +134,29 @@ describe('App', () => {
     expect(screen.getByText('Échantillon de 3 prénoms')).toBeInTheDocument();
     expect(screen.getByText(/"femaleShare":0.769/)).toBeInTheDocument();
   });
+
+  it('étape 5 : recherche insensible aux accents, avec trois modes', async () => {
+    window.location.hash = '#/dev';
+    render(<App />);
+    await screen.findByText('Échantillon de 3 prénoms');
+    const input = screen.getByLabelText('Recherche brute');
+    const summary = screen.getByTestId('query-summary');
+    const results = screen.getByTestId('query-results');
+    expect(summary).toHaveTextContent(/3 résultats sur 3 en .* ms/);
+
+    fireEvent.change(input, { target: { value: 'lea' } });
+    expect(summary).toHaveTextContent('1 résultat sur 3');
+    const plain = results.textContent;
+    fireEvent.change(input, { target: { value: 'Léa' } });
+    expect(results.textContent).toBe(plain);
+    expect(results).toHaveTextContent('Léa');
+
+    fireEvent.change(input, { target: { value: 'ba' } });
+    expect(summary).toHaveTextContent('0 résultat sur 3');
+    fireEvent.click(screen.getByLabelText('Contient'));
+    expect(results).toHaveTextContent('Jean-Baptiste');
+    fireEvent.change(input, { target: { value: 'LLE' } });
+    fireEvent.click(screen.getByLabelText('Finit par'));
+    expect(results).toHaveTextContent('Camille');
+  });
 });

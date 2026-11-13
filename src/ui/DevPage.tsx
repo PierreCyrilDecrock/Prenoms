@@ -3,6 +3,7 @@ import { buildInfo } from '@/ui/buildInfo';
 import { DevStep2 } from '@/ui/DevStep2';
 import { DevStep3 } from '@/ui/DevStep3';
 import { DevStep4 } from '@/ui/DevStep4';
+import { DevStep5 } from '@/ui/DevStep5';
 import { colorTokens } from '@/ui/tokens';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -139,6 +140,10 @@ export function DevPage() {
 
       <Section title="Étape 4 – Source INSEE dans le navigateur">
         <DevStep4 />
+      </Section>
+
+      <Section title="Étape 5 – Moteur de requête">
+        <DevStep5 />
       </Section>
     </main>
   );
