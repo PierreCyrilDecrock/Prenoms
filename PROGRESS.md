@@ -11,7 +11,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | 5   | Moteur de requête                       | terminée | 2026-11-13 | `5de104e` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 6   | Filtres de la v1                        | terminée | 2026-11-13 | `9f4a648` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 7   | Tris de la v1                           | terminée | 2026-11-13 | `b4e595a` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 8   | Interface : structure et lisibilité     | à faire  |            |           |                                                    |
+| 8   | Interface : structure et lisibilité     | terminée | 2026-11-13 | `7e3956d` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 9   | Animations et interactions              | à faire  |            |           |                                                    |
 | 10  | État dans l'URL, favoris, export        | à faire  |            |           |                                                    |
 | 11  | Tests, performance, accessibilité       | à faire  |            |           |                                                    |
@@ -126,3 +126,25 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
   10 précédentes), pas en pourcentage, pour que les prénoms très rares ne dominent pas.
 - Tri factice `example` retiré : il ne reste plus aucun module factice.
 - `src/core` non modifié à cette étape.
+
+### Étape 8 – 2026-11-13
+
+- Commit `7e3956d`, workflow vert. Vérifié sur l'URL publiée avec un navigateur automatisé, à
+  360 px et 1440 px, en thème clair et sombre : `version.json` renvoie ce SHA ; la liste affiche
+  32 157 prénoms (Marie, Jean, Pierre en tête) avec moins de 30 lignes dans la page ; le tiroir
+  occupe tout l'écran à 360 px ; la barre latérale est fixe à 1440 px ; un clic ouvre la fiche
+  avec sa courbe ; aucun défilement horizontal ni erreur.
+- Changement de contrat dans `src/core` : méthode optionnelle `Filter.describe(params)`, pour le
+  texte des pastilles. Les 11 filtres l'implémentent.
+- Choix :
+  - `src/ui/inseeView.ts` est le seul fichier de l'interface qui lit les faits INSEE (total,
+    répartition, séries) : le contrat ne décrit pas encore comment afficher une ligne ;
+  - le tri par défaut est la popularité totale décroissante ;
+  - dans la liste, le libellé de répartition est court (« 72 % filles ») ; la fiche donne les
+    deux parts ;
+  - le filtre `textSearch` est libellé « Texte supplémentaire », pour le distinguer de la
+    recherche de l'en-tête ;
+  - la position de défilement de la liste est retrouvée au retour d'une fiche.
+- Non fait à cette étape, prévu plus tard : animations (étape 9), état dans l'URL et favoris
+  (étape 10), audit axe et Lighthouse (étape 11).
+- Compteur temporaire de l'étape 4 retiré de l'accueil.
