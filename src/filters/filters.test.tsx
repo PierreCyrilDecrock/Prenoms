@@ -92,11 +92,12 @@ describe('filtres de la v1 – contrat commun', () => {
     expect(ids).toEqual(expect.arrayContaining(EXPECTED_IDS));
   });
 
+  // Contrat vérifié pour tout filtre du registre, y compris ceux ajoutés plus tard.
   describe.each(filters.all().map((filter) => [filter.id, filter] as const))(
     '%s',
     (_id, filter) => {
-      it('appartient à un groupe connu et est inactif par défaut', () => {
-        expect(GROUPS).toContain(filter.group);
+      it('a un groupe et est inactif par défaut', () => {
+        expect(filter.group.trim()).not.toBe('');
         expect(filter.isActive(filter.defaultParams)).toBe(false);
       });
 
@@ -120,13 +121,22 @@ describe('filtres de la v1 – contrat commun', () => {
         );
         expect(container.querySelector('input, button')).not.toBeNull();
       });
-
-      it('déclare la source insee s’il lit facts.insee ou un champ qui en dépend', () => {
-        const needsInsee = ['gender', 'totalPopularity', 'periodPopularity', 'peakPeriod', 'trend'];
-        expect(filter.requires ?? []).toEqual(needsInsee.includes(filter.id) ? ['insee'] : []);
-      });
     },
   );
+
+  // Groupes et sources attendus des filtres livrés (un filtre ajouté déclare les siens).
+  describe.each([...EXPECTED_IDS, 'favorites'])('%s (filtre livré)', (id) => {
+    const filter = filters.get(id)!;
+
+    it('appartient à un groupe connu', () => {
+      expect(GROUPS).toContain(filter.group);
+    });
+
+    it('déclare la source insee s’il lit facts.insee ou un champ qui en dépend', () => {
+      const needsInsee = ['gender', 'totalPopularity', 'periodPopularity', 'peakPeriod', 'trend'];
+      expect(filter.requires ?? []).toEqual(needsInsee.includes(filter.id) ? ['insee'] : []);
+    });
+  });
 });
 
 describe('textSearch', () => {

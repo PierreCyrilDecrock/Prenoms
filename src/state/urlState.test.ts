@@ -11,7 +11,10 @@ import {
 
 const base: UrlQuery = { search: '', mode: 'startsWith', filterParams: {}, ...DEFAULT_SORT };
 
-/** Un jeu de paramètres actifs par filtre : chaque filtre du registre doit en avoir un. */
+/**
+ * Un jeu de paramètres actifs pour chaque filtre livré. Un filtre ajouté plus tard teste son
+ * propre aller-retour (voir docs/ajouter-un-filtre.md).
+ */
 const activeSamples: Record<string, unknown> = {
   accents: { value: 'with' },
   compound: { value: 'exclude' },
@@ -34,14 +37,18 @@ describe('sérialisation de la requête dans l’URL', () => {
     expect(listHref(base)).toBe('#/');
   });
 
-  it('chaque filtre du registre a un jeu de paramètres d’essai', () => {
-    expect(Object.keys(activeSamples).sort()).toEqual(
-      filters
-        .all()
-        .map((filter) => filter.id)
-        .sort(),
-    );
+  it('chaque jeu d’essai correspond à un filtre du registre', () => {
+    for (const id of Object.keys(activeSamples)) expect(filters.has(id), id).toBe(true);
   });
+
+  it.each(filters.all().map((filter) => [filter.id, filter] as const))(
+    'le filtre %s n’écrit rien dans l’URL tant qu’il est inactif',
+    (id, filter) => {
+      expect(serializeQuery({ ...base, filterParams: { [id]: filter.defaultParams } })).toBe('');
+      const value = encodeURIComponent(filter.toUrl(filter.defaultParams));
+      expect(parseQuery(`f.${id}=${value}`)).toEqual(base);
+    },
+  );
 
   it.each(Object.entries(activeSamples))('aller-retour du filtre %s', (id, params) => {
     const filter = filters.get(id)!;

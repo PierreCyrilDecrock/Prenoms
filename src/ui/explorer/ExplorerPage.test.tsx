@@ -6,6 +6,13 @@ import { App } from '@/ui/App';
 import { provisionalLabel } from '@/ui/NamePage';
 import { niceMax } from './YearChart';
 
+// L'interface est testée sur les seules données d'essai de l'INSEE : une source ajoutée plus
+// tard (voir docs/ajouter-une-source.md) ne change pas ces tests.
+vi.mock('@/core/registries', async (importOriginal) => {
+  const { onlySources } = await import('@/testing/registries');
+  return onlySources(await importOriginal(), ['insee']);
+});
+
 /*
  * Données d'essai (3 prénoms) : Camille 65 naissances (mixte), Léa 18 (filles),
  * Jean-Baptiste 15 (garçons). L'environnement de test se comporte comme un téléphone.

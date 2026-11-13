@@ -1,8 +1,16 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { filters, sorts } from '@/core';
+import { filters, sorts, sources } from '@/core';
 import { sampleData } from '@/sources/insee/facts.test';
 import { App } from '@/ui/App';
 import { parseHashPath } from '@/ui/useHashRoute';
+import { availableWith } from '@/testing/registries';
+
+// L'interface est testée sur les seules données d'essai de l'INSEE : une source ajoutée plus
+// tard (voir docs/ajouter-une-source.md) ne change pas ces tests.
+vi.mock('@/core/registries', async (importOriginal) => {
+  const { onlySources } = await import('@/testing/registries');
+  return onlySources(await importOriginal(), ['insee']);
+});
 
 describe('parseHashPath', () => {
   it('renvoie "/" pour un hash vide ou invalide', () => {
@@ -177,7 +185,9 @@ describe('App', () => {
     for (const group of ['Texte', 'Popularité', 'Chronologie', 'Forme']) {
       expect(screen.getByRole('region', { name: `Groupe ${group}` })).toBeInTheDocument();
     }
-    expect(screen.getAllByTestId(/^filter-[a-zA-Z]+$/)).toHaveLength(filters.all().length);
+    expect(screen.getAllByTestId(/^filter-[a-zA-Z]+$/)).toHaveLength(
+      availableWith(filters.all(), sources).length,
+    );
 
     const gender = within(screen.getByTestId('filter-gender'));
     fireEvent.click(gender.getByLabelText('Filles'));
@@ -205,7 +215,9 @@ describe('App', () => {
         .getAllByRole('rowheader')
         .map((cell) => cell.textContent);
     const select = screen.getByLabelText('Trier par');
-    expect(within(select).getAllByRole('option')).toHaveLength(sorts.all().length);
+    expect(within(select).getAllByRole('option')).toHaveLength(
+      availableWith(sorts.all(), sources).length,
+    );
 
     expect(names()).toEqual(['Camille', 'Jean-Baptiste', 'Léa']);
     fireEvent.click(screen.getByLabelText('Décroissant'));
