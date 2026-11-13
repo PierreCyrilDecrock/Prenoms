@@ -288,4 +288,17 @@ describe('App', () => {
       ).toHaveLength(4),
     );
   });
+
+  it('étape 13 : guides, preuve d’extensibilité et absence de la source factice', async () => {
+    await renderDev();
+    expect(screen.getByRole('link', { name: 'Ajouter un filtre' })).toHaveAttribute(
+      'href',
+      'https://github.com/PierreCyrilDecrock/Prenoms/blob/main/docs/ajouter-un-filtre.md',
+    );
+    expect(screen.getByTestId('proof-stat')).toHaveTextContent('7 fichiers ajoutés, 189 lignes');
+    expect(screen.getByTestId('proof-stat')).not.toHaveTextContent('src/core');
+    expect(screen.getByTestId('registered-sources')).toHaveTextContent(
+      'insee · source factice « demo » absente',
+    );
+  });
 });

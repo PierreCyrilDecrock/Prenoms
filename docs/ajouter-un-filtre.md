@@ -37,7 +37,8 @@ interface Filter<P> {
 ## Règles
 
 1. **`id` stable.** Il figure dans les liens partagés (`#/?f.<id>=…`) : le changer casse ces liens.
-2. **`group`.** Un nom de groupe nouveau crée un nouveau groupe dans le panneau.
+2. **`group`.** Un nom de groupe nouveau crée un nouveau groupe dans le panneau. Les groupes et
+   les filtres suivent l'ordre alphabétique des noms de fichiers de `src/filters/`.
 3. **`defaultParams` et `isActive`.** `isActive(defaultParams)` est faux. Un filtre inactif n'est
    ni appliqué, ni écrit dans l'adresse, ni affiché en pastille.
 4. **`test` ne lève jamais.** Un prénom peut ne pas avoir les faits de la source lue (il vient

@@ -50,7 +50,10 @@ interface SourceRecord {
 2. **L'identifiant d'un prénom est calculé par le cœur**, avec `normalizeName(label)` (minuscules,
    sans accents). « Léa » et « LEA » venant de deux sources désignent le même prénom.
 3. **Fusion sans écrasement.** Un prénom déjà connu reçoit seulement `facts.<id>` ; un prénom
-   inconnu des autres sources devient une nouvelle entrée.
+   inconnu des autres sources devient une nouvelle entrée. Quand plusieurs sources fournissent le
+   même prénom, la forme affichée est celle de la première source, dans l'ordre alphabétique des
+   dossiers (`demo` passe avant `insee`) : fournir une forme d'affichage soignée (« Léa », pas
+   « LEA »).
 4. **Imports.** Dans `src/sources/<id>/`, n'importer de `@/core` que des types (`import type`).
    Pour une fonction, importer son fichier (`@/core/slices`, `@/core/normalizeName`) : `@/core`
    charge les registres, qui chargent les sources, et cet import circulaire laisserait la source
