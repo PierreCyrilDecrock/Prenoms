@@ -15,7 +15,8 @@
     "validate:data": "node scripts/validate-data.ts",
     "e2e": "playwright test",
     "e2e:live": "E2E_BASE_URL=https://pierrecyrildecrock.github.io/Prenoms/ playwright test",
-    "lighthouse": "lighthouse https://pierrecyrildecrock.github.io/Prenoms/ --chrome-flags=\"--headless=new --no-sandbox\" --only-categories=performance,accessibility,best-practices --form-factor=mobile --output=html --output-path=.lighthouse/rapport.html"
+    "lighthouse": "lighthouse https://pierrecyrildecrock.github.io/Prenoms/ --chrome-flags=\"--headless=new --no-sandbox\" --only-categories=performance,accessibility,best-practices --form-factor=mobile --output=html --output-path=.lighthouse/rapport.html",
+    "capture": "node scripts/capture.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
@@ -49,5 +50,6 @@
     "typescript-eslint": "^8.72.2",
     "vite": "^8.3.8",
     "vitest": "^5.1.0"
-  }
+  },
+  "description": "Explorateur de prénoms : application statique pour rechercher, filtrer et trier les prénoms donnés en France (données Insee)."
 }

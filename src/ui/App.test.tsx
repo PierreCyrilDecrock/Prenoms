@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { filters, sorts } from '@/core';
 import { sampleData } from '@/sources/insee/facts.test';
 import { App } from '@/ui/App';
@@ -260,5 +260,20 @@ describe('App', () => {
     const table = within(screen.getByTestId('perf-measures'));
     expect(table.getAllByRole('row')).toHaveLength(7);
     expect(table.getByRole('row', { name: /Filtre filles/ })).toHaveTextContent('dans le budget');
+  });
+
+  it('étape 12 : affiche les métadonnées de la page et vérifie les fichiers publiés', async () => {
+    document.title = 'Explorateur de prénoms';
+    await renderDev();
+    expect(screen.getByTestId('meta-Titre de la page')).toHaveTextContent('Explorateur de prénoms');
+    expect(screen.getByRole('img', { name: 'Icône du site' })).toHaveAttribute(
+      'src',
+      '/favicon.svg',
+    );
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('publication-checks')).getAllByRole('listitem'),
+      ).toHaveLength(4),
+    );
   });
 });

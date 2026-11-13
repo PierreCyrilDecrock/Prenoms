@@ -1,0 +1,16 @@
+{
+  "name": "Explorateur de prénoms",
+  "short_name": "Prénoms",
+  "description": "Recherchez, filtrez et triez les prénoms donnés en France depuis 1900, d’après les données de l’Insee.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf9f6",
+  "theme_color": "#4338ca",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

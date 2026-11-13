@@ -9,6 +9,7 @@ import { DevStep7 } from '@/ui/DevStep7';
 import { DevStep8 } from '@/ui/DevStep8';
 import { DevStep10 } from '@/ui/DevStep10';
 import { DevStep11 } from '@/ui/DevStep11';
+import { DevStep12 } from '@/ui/DevStep12';
 import { DevStep9 } from '@/ui/DevStep9';
 import { colorTokens } from '@/ui/tokens';
 
@@ -174,6 +175,10 @@ export function DevPage() {
 
       <Section title="Étape 11 – Tests, performance, accessibilité">
         <DevStep11 />
+      </Section>
+
+      <Section title="Étape 12 – Finitions de publication">
+        <DevStep12 />
       </Section>
     </main>
   );

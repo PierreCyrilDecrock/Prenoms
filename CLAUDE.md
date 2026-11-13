@@ -39,19 +39,20 @@ docs/        plan et guides d'extension
 
 ## Commandes
 
-| Commande                | Effet                                                         |
-| ----------------------- | ------------------------------------------------------------- |
-| `npm run dev`           | Serveur de développement                                      |
-| `npm run build`         | Vérification des types puis build dans `dist/`                |
-| `npm run preview`       | Sert `dist/` (ajouter `--base /Prenoms/` au build)            |
-| `npm test`              | Tests Vitest + Testing Library                                |
-| `npm run lint`          | ESLint + vérification Prettier                                |
-| `npm run format`        | Formate avec Prettier                                         |
-| `npm run e2e`           | Scénarios Playwright sur un build local (mobile et desktop)   |
-| `npm run e2e:live`      | Les mêmes scénarios contre le site publié                     |
-| `npm run lighthouse`    | Audit Lighthouse mobile du site publié (`CHROME_PATH` requis) |
-| `npm run build:data`    | Régénère `public/data/insee.json` depuis `data/raw/`          |
-| `npm run validate:data` | Vérifie que les sommes du JSON égalent celles du CSV          |
+| Commande                | Effet                                                                    |
+| ----------------------- | ------------------------------------------------------------------------ |
+| `npm run dev`           | Serveur de développement                                                 |
+| `npm run build`         | Vérification des types puis build dans `dist/`                           |
+| `npm run preview`       | Sert `dist/` (ajouter `--base /Prenoms/` au build)                       |
+| `npm test`              | Tests Vitest + Testing Library                                           |
+| `npm run lint`          | ESLint + vérification Prettier                                           |
+| `npm run format`        | Formate avec Prettier                                                    |
+| `npm run e2e`           | Scénarios Playwright sur un build local (mobile et desktop)              |
+| `npm run e2e:live`      | Les mêmes scénarios contre le site publié                                |
+| `npm run lighthouse`    | Audit Lighthouse mobile du site publié (`CHROME_PATH` requis)            |
+| `npm run capture`       | Régénère icônes, image d'aperçu et captures du README (site local lancé) |
+| `npm run build:data`    | Régénère `public/data/insee.json` depuis `data/raw/`                     |
+| `npm run validate:data` | Vérifie que les sommes du JSON égalent celles du CSV                     |
 
 Test local sous sous-chemin : `VITE_BASE=/Prenoms/ npm run build && VITE_BASE=/Prenoms/ npm run preview`.
 
@@ -199,6 +200,17 @@ décrit l'ordre croissant ; le sens et le départage alphabétique sont gérés 
   (`offsetTop`, `getBoundingClientRect`) à chaque rendu : les deux forcent un recalcul de mise en
   page à chaque frappe (mesuré à l'étape 9).
 - `useResults()` trie la liste complète une fois par tri, puis filtre en conservant l'ordre.
+
+## Publication
+
+- Métadonnées dans `index.html` : titre, description, balises Open Graph. Les adresses absolues
+  viennent de `VITE_SITE_URL` (fichier `.env`) ; icône et manifest passent par `%BASE_URL%`.
+- `public/` : `favicon.svg` (source de l'icône), `icon-192.png`, `icon-512.png`,
+  `apple-touch-icon.png`, `og.png`, `manifest.webmanifest` (chemins relatifs). Les PNG et les
+  captures de `docs/img/` sont produits par `scripts/capture.ts`.
+- Crédit obligatoire (Licence Ouverte 2.0) : « Source : Insee » et la date de l'édition, dans le
+  pied de page et le README. À mettre à jour avec les données.
+- `#/dev` n'est accessible que par le lien « Diagnostic » du pied de page.
 
 ## Jetons de design
 

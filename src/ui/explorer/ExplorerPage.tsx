@@ -104,7 +104,7 @@ export function ExplorerPage() {
       <footer className="flex flex-col items-center gap-1 border-t border-line px-4 py-4 text-center text-sm text-ink-muted">
         <MotionSettings />
         <p>
-          Données : INSEE, fichier des prénoms ·{' '}
+          Source : Insee, fichier des prénoms (édition du 8 juillet 2024) ·{' '}
           <a href="#/dev" className="inline-flex min-h-11 items-center underline">
             Diagnostic
           </a>
