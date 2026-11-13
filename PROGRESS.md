@@ -15,7 +15,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | 9   | Animations et interactions              | terminée | 2026-11-13 | `98fa48d` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 10  | État dans l'URL, favoris, export        | terminée | 2026-11-13 | `cc6362e` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 11  | Tests, performance, accessibilité       | terminée | 2026-11-13 | `65aa5c5` | https://pierrecyrildecrock.github.io/Prenoms/      |
-| 12  | Finitions de publication                | à faire  |            |           |                                                    |
+| 12  | Finitions de publication                | terminée | 2026-11-13 | `6f64a93` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 13  | Documentation et preuve d'extensibilité | à faire  |            |           |                                                    |
 
 ## Journal
@@ -252,3 +252,33 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
   `mergeSourcesSteps`, chemin rapide dans `normalizeName`.
 - Données régénérées (ordre par popularité) : 908 Ko gzip au lieu de 976 ; sommes identiques au
   CSV.
+
+### Étape 12 – 2026-11-13
+
+- Commits `89b059e` (finitions) et `6f64a93` (correction de tests), workflow vert, `version.json`
+  renvoie `6f64a93`.
+- Vérifié sur l'URL publiée :
+  - `og.png`, `favicon.svg`, les trois icônes PNG et `manifest.webmanifest` répondent 200 ;
+  - `data/insee.json` répond 200 ; `data/raw/prenoms-2023-nat.csv` et `data/raw/` répondent 404 ;
+  - le HTML servi contient le titre, la description et les balises Open Graph, avec des adresses
+    absolues vers `https://pierrecyrildecrock.github.io/Prenoms/` ;
+  - 71 scénarios Playwright passent (74 au total, 3 limités à un format), dont 4 nouveaux sur la
+    publication.
+- Licence des données vérifiée sur les mentions légales de l'Insee
+  (https://www.insee.fr/fr/information/2008466) : Licence Ouverte / Open Licence 2.0 (Etalab),
+  réutilisation libre avec mention « Source : Insee » et de la date de mise à jour. La page du
+  jeu de données ne porte pas de mention contraire. Le crédit figure dans le pied de page et le
+  README.
+- README : description, 7 captures (`docs/img/`), URL, commandes, régénération des données,
+  architecture, crédits et licence. Un test vérifie que ses liens internes pointent vers des
+  fichiers existants.
+- Rien de temporaire ne restait sur l'accueil ; l'icône provisoire de l'étape 11 est remplacée.
+  `#/dev` reste accessible par le lien « Diagnostic » du pied de page.
+- Choix et écarts :
+  - le README ne renvoie pas encore aux guides d'extension : ils sont écrits à l'étape 13 ;
+  - non vérifié : l'aperçu réel dans une messagerie (seules les balises et l'image servies l'ont
+    été) et le rendu du README sur GitHub ;
+  - aucune licence n'est déclarée pour le code du dépôt : c'est une décision qui vous revient ;
+  - l'adresse publique vit dans `.env` (`VITE_SITE_URL`) ; à changer si le site déménage.
+- Défaut de test corrigé : les scénarios de publication interrogeaient le serveur hors du
+  navigateur, ce qui échouait contre le site publié depuis l'environnement de développement.
