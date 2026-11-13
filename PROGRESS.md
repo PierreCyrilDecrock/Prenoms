@@ -14,7 +14,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | 8   | Interface : structure et lisibilité     | terminée | 2026-11-13 | `7e3956d` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 9   | Animations et interactions              | terminée | 2026-11-13 | `98fa48d` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 10  | État dans l'URL, favoris, export        | terminée | 2026-11-13 | `cc6362e` | https://pierrecyrildecrock.github.io/Prenoms/      |
-| 11  | Tests, performance, accessibilité       | à faire  |            |           |                                                    |
+| 11  | Tests, performance, accessibilité       | terminée | 2026-11-13 | `65aa5c5` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 12  | Finitions de publication                | à faire  |            |           |                                                    |
 | 13  | Documentation et preuve d'extensibilité | à faire  |            |           |                                                    |
 
@@ -206,3 +206,49 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 - Non vérifié : l'ouverture du CSV dans Excel lui-même (seuls le BOM et le contenu du fichier
   l'ont été).
 - `src/core` non modifié à cette étape.
+
+### Étape 11 – 2026-11-13
+
+- Commit `65aa5c5`, workflow vert, `version.json` renvoie ce SHA.
+- Scénarios Playwright (`npm run e2e`, `npm run e2e:live`) : 66 scénarios sur deux formats
+  (mobile Pixel 7, desktop 1440 px). **63 passent en local et contre l'URL publiée** ; les 3
+  autres sont volontairement limités à un format (raccourci « / », focus au clavier et lien
+  d'évitement : desktop seulement).
+- Lighthouse mobile sur l'URL publiée (navigateur de test, 3 passes pour la liste) :
+
+  | Page                      | Performance | Accessibilité | Bonnes pratiques |
+  | ------------------------- | ----------- | ------------- | ---------------- |
+  | Liste (`#/`)              | 94, 95, 99  | 100           | 100              |
+  | Fiche ouverte directement | 77          | 100           | 100              |
+
+  Avant corrections, la liste était à 87 en performance.
+
+- Audit axe (WCAG 2.1 A et AA, bonnes pratiques) sur 7 écrans, en clair et en sombre, aux deux
+  formats : **aucune violation** après corrections. Aucun défaut de contraste relevé.
+- Performance sur les données réelles (URL publiée) : premier affichage en 1,3 à 1,5 s, 0,5 s
+  depuis le cache ; une frappe, un effacement ou un filtre répondent en 9 à 22 ms (budget :
+  100 ms). Le pipeline n'a donc pas été déplacé dans un Web Worker.
+- Corrigé :
+  - ordre des titres sur ordinateur : titre « Filtres » ajouté au-dessus des groupes ;
+  - blocs défilants non atteignables au clavier sur la page de diagnostic ;
+  - nom lu du bouton « Effacer » d'un filtre (trouvé à l'étape 8, vérifié ici) ;
+  - lien d'évitement « Aller aux résultats » : sans lui, il fallait plus de 45 tabulations sur
+    ordinateur pour atteindre un prénom ;
+  - chargement qui bloquait l'interface environ 0,5 s sur mobile simulé : traitement par tranches
+    de 8 ms (`runInSlices`), calcul des faits en une passe, données livrées triées par
+    popularité, cache stocké en texte, page de diagnostic chargée à la demande ;
+  - requête en erreur sur `favicon.ico` (icône provisoire vide ; la vraie arrive à l'étape 12).
+- Non corrigé, et pourquoi :
+  - fiche ouverte directement, performance 77 : son contenu attend le téléchargement de toutes
+    les données (0,9 Mo, environ 6 s sur la 4G lente simulée par Lighthouse). Y remédier
+    demanderait un fichier par prénom, hors périmètre. Les visites suivantes utilisent le cache ;
+  - JavaScript inutilisé signalé par Lighthouse (environ 75 Ko) : Motion et React, sans effet sur
+    le score atteint ;
+  - les scénarios de bout en bout ne tournent pas dans le workflow de déploiement (installer un
+    navigateur l'allongerait) : ils sont à lancer à la main ;
+  - fluidité à processeur ralenti 4 fois (mesurée à l'étape 9) : non remesurée ici ; le coût par
+    frappe a encore baissé (une clé par prénom n'est plus recalculée), sans mesure sur téléphone.
+- Changements dans `src/core`, sans toucher aux contrats : `slices.ts` (travail par tranches),
+  `mergeSourcesSteps`, chemin rapide dans `normalizeName`.
+- Données régénérées (ordre par popularité) : 908 Ko gzip au lieu de 976 ; sommes identiques au
+  CSV.
