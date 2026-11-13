@@ -2,21 +2,21 @@
 
 URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 
-| N°  | Étape                                   | Statut   | Date       | Commit    | URL de vérification                                          |
-| --- | --------------------------------------- | -------- | ---------- | --------- | ------------------------------------------------------------ |
-| 1   | Initialisation et déploiement           | terminée | 2026-11-12 | `d282967` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
-| 2   | Contrats du cœur                        | terminée | 2026-11-12 | `9b7f058` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
-| 3   | Pipeline de données INSEE               | terminée | 2026-11-12 | `18153cf` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
-| 4   | Source INSEE dans le navigateur         | terminée | 2026-11-13 | `33f23a6` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
-| 5   | Moteur de requête                       | terminée | 2026-11-13 | `5de104e` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
-| 6   | Filtres de la v1                        | terminée | 2026-11-13 | `9f4a648` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
-| 7   | Tris de la v1                           | terminée | 2026-11-13 | `b4e595a` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
-| 8   | Interface : structure et lisibilité     | terminée | 2026-11-13 | `7e3956d` | https://pierrecyrildecrock.github.io/Prenoms/                |
-| 9   | Animations et interactions              | terminée | 2026-11-13 | `98fa48d` | https://pierrecyrildecrock.github.io/Prenoms/                |
-| 10  | État dans l'URL, favoris, export        | terminée | 2026-11-13 | `cc6362e` | https://pierrecyrildecrock.github.io/Prenoms/                |
-| 11  | Tests, performance, accessibilité       | terminée | 2026-11-13 | `65aa5c5` | https://pierrecyrildecrock.github.io/Prenoms/                |
-| 12  | Finitions de publication                | terminée | 2026-11-13 | `6f64a93` | https://pierrecyrildecrock.github.io/Prenoms/                |
-| 13  | Documentation et preuve d'extensibilité | terminée | 2026-11-13 | `d909bc7` | https://github.com/PierreCyrilDecrock/Prenoms/tree/main/docs |
+| N°  | Étape                                   | Statut                            | Date       | Commit    | URL de vérification                                          |
+| --- | --------------------------------------- | --------------------------------- | ---------- | --------- | ------------------------------------------------------------ |
+| 1   | Initialisation et déploiement           | terminée                          | 2026-11-12 | `d282967` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 2   | Contrats du cœur                        | terminée                          | 2026-11-12 | `9b7f058` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 3   | Pipeline de données INSEE               | terminée (reprise : édition 2026) | 2026-11-13 | `d58a0a8` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 4   | Source INSEE dans le navigateur         | terminée                          | 2026-11-13 | `33f23a6` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 5   | Moteur de requête                       | terminée                          | 2026-11-13 | `5de104e` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 6   | Filtres de la v1                        | terminée                          | 2026-11-13 | `9f4a648` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 7   | Tris de la v1                           | terminée                          | 2026-11-13 | `b4e595a` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 8   | Interface : structure et lisibilité     | terminée                          | 2026-11-13 | `7e3956d` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 9   | Animations et interactions              | terminée                          | 2026-11-13 | `98fa48d` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 10  | État dans l'URL, favoris, export        | terminée                          | 2026-11-13 | `cc6362e` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 11  | Tests, performance, accessibilité       | terminée                          | 2026-11-13 | `65aa5c5` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 12  | Finitions de publication                | terminée                          | 2026-11-13 | `6f64a93` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 13  | Documentation et preuve d'extensibilité | terminée                          | 2026-11-13 | `d909bc7` | https://github.com/PierreCyrilDecrock/Prenoms/tree/main/docs |
 
 ## Journal
 
@@ -337,3 +337,34 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
     choisi ;
   - un lien qui ne contient que des paramètres inconnus (par exemple un ancien lien de la démo)
     affiche la bonne vue, mais l'adresse n'est pas nettoyée.
+
+### Étape 3 – reprise : édition 2026 (2026-11-13)
+
+- Demande : « refais l'étape 3 : passer à l'édition 2026 ». Commit `d58a0a8`, workflow vert,
+  `version.json` renvoie ce SHA.
+- **Erreur corrigée** : à l'étape 3, j'avais utilisé l'édition 2024 (page 8205621, naissances
+  jusqu'en 2023), la seule proposée sur la page citée par le plan. Deux éditions plus récentes
+  existaient sur d'autres pages : 2025 (page 8894961) et **2026 (page 8595130, parue le
+  16 juillet 2026, naissances 1900–2025)**, désormais utilisée.
+- Changements de l'édition 2026, constatés sur le fichier `prenoms-2025-nat.csv` :
+  - colonnes renommées : `sexe;prenom;periode;valeur;rang` (au lieu de `sexe;preusuel;annais;nombre`) ;
+  - effectifs **arrondis au multiple de 5** (minimum 5) ; `rang` calculé par l'Insee sur les
+    effectifs non arrondis ;
+  - plus aucune ligne d'année inconnue (`XXXX`) ni de regroupement `_PRENOMS_RARES`. La page de
+    l'Insee ne dit pas ce que deviennent les prénoms rares ; d'après le fichier, les effectifs
+    annuels de 1 ou 2, arrondis à 0, sont absents (déduction, non documentée par l'Insee).
+- Script : lecture des colonnes par leur nom (formats 2024 et 2026 acceptés, `rang` ignoré),
+  arrondi repéré et affiché dans le rapport et sur `#/dev`. Nouveau fichier d'essai
+  `data/fixtures/insee-2026-sample.csv` et 5 tests.
+- Résultat : **43 459 prénoms** (exactement le chiffre cité par le plan pour l'édition 2026),
+  87 644 320 naissances, 5 704 graphies fusionnées, 3,80 Mo brut et **739 Ko gzip** (908 Ko
+  avant). `validate:data` : sommes identiques au CSV.
+- Mis à jour : crédit du pied de page (« édition du 16 juillet 2026, effectifs arrondis à 5 »),
+  README (source, chiffres, arrondi), `CLAUDE.md`, métadonnées et image d'aperçu (« plus de
+  43 000 prénoms »), captures du README, guides, page `#/dev`.
+- Scénarios de bout en bout : les effectifs attendus ont été recalculés depuis le CSV par un
+  script Python indépendant de l'application (par exemple « lea » : 50 prénoms ; filles : 22 674 ;
+  Camille : pic en 1998, dernière année 2025). 71 scénarios verts en local et sur l'URL publiée.
+- Lighthouse mobile sur l'URL publiée : performance 92 et 97, accessibilité 100.
+- Les caches IndexedDB des visiteurs sont invalidés automatiquement (nouvelle date de
+  génération) : la nouvelle édition se télécharge à la première visite.
