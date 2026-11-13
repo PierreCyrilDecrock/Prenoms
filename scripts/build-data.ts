@@ -49,6 +49,10 @@ line('Prénoms sans année connue', formatInt(excluded.namesWithoutKnownYear));
 console.log('\nRésultat');
 line('Prénoms', formatInt(meta.nameCount));
 line('Graphies fusionnées', formatInt(report.mergedVariants));
+line(
+  'Effectifs arrondis',
+  report.countsRoundedTo ? `au multiple de ${report.countsRoundedTo}` : 'non (effectifs exacts)',
+);
 line('Naissances conservées', formatInt(meta.totalBirths));
 line('Années', `${meta.yearMin}–${meta.yearMax}`);
 line(OUT_JSON, `${formatBytes(size.raw)} brut, ${formatBytes(size.gzip)} gzip`);

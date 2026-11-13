@@ -23,7 +23,7 @@ test.describe('publication', () => {
     await page.goto('./');
     await expect(page).toHaveTitle('Explorateur de prénoms');
     const content = (selector: string) => page.locator(selector).getAttribute('content');
-    expect(await content('meta[name="description"]')).toContain('32 000 prénoms');
+    expect(await content('meta[name="description"]')).toContain('43 000 prénoms');
     expect(await content('meta[property="og:title"]')).toBe('Explorateur de prénoms');
     expect(await content('meta[property="og:description"]')).toContain('Insee');
     expect(await content('meta[property="og:url"]')).toMatch(/^https:\/\/.+\/Prenoms\/$/);
@@ -63,7 +63,7 @@ test.describe('publication', () => {
     page,
   }) => {
     await page.goto('./');
-    const raw = await fetchInPage(page, 'data/raw/prenoms-2023-nat.csv');
+    const raw = await fetchInPage(page, 'data/raw/prenoms-2025-nat.csv');
     // Une erreur 404, ou la page de repli du serveur local : jamais le CSV.
     expect(raw.status === 404 || raw.text.includes('<!doctype html>')).toBe(true);
     expect(raw.text).not.toContain('sexe;preusuel');

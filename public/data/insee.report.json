@@ -1,36 +1,37 @@
 {
   "meta": {
     "formatVersion": 1,
-    "generatedAt": "2026-11-13T13:36:08.527Z",
-    "sourceFile": "prenoms-2023-nat.csv",
+    "generatedAt": "2026-11-13T21:39:53.760Z",
+    "sourceFile": "prenoms-2025-nat.csv",
     "yearMin": 1900,
-    "yearMax": 2023,
-    "nameCount": 32157,
-    "totalBirths": 86102834
+    "yearMax": 2025,
+    "nameCount": 43459,
+    "totalBirths": 87644320
   },
   "csv": {
-    "rows": 719160,
-    "births": 88828392,
-    "distinctNames": 37766
+    "rows": 724645,
+    "births": 87644320,
+    "distinctNames": 49163
   },
   "excluded": {
     "unknownYear": {
-      "rows": 39704,
-      "births": 926369
+      "rows": 0,
+      "births": 0
     },
     "rareNames": {
-      "rows": 248,
-      "births": 1799189
+      "rows": 0,
+      "births": 0
     },
     "invalid": {
       "rows": 0,
       "births": 0
     },
-    "namesWithoutKnownYear": 2123
+    "namesWithoutKnownYear": 0
   },
-  "mergedVariants": 3486,
+  "mergedVariants": 5704,
+  "countsRoundedTo": 5,
   "size": {
-    "raw": 3413416,
-    "gzip": 929964
+    "raw": 3981920,
+    "gzip": 757073
   }
 }

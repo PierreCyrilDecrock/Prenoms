@@ -83,13 +83,16 @@ Autres règles :
 
 ## Données INSEE
 
-- Source : fichier national `prenoms-2023-nat.csv` (naissances 1900–2023), téléchargé depuis
-  https://www.insee.fr/fr/statistiques/8205621 et décompressé dans `data/raw/` (ignoré par git).
+- Source : fichier national `prenoms-2025-nat.csv` de l'édition 2026 (naissances 1900–2025,
+  effectifs arrondis au multiple de 5), téléchargé depuis
+  https://www.insee.fr/fr/statistiques/8595130 et décompressé dans `data/raw/` (ignoré par git).
+  Chaque édition a sa propre page : vérifier qu'aucune plus récente n'existe avant de mettre à jour.
 - `npm run build:data` écrit `public/data/insee.json` (format décrit dans
   `src/sources/insee/format.ts`) et `public/data/insee.report.json` (exclusions, tailles). Ces
   deux fichiers sont commités : le build en ligne ne régénère pas les données.
-- Les lignes d'année inconnue (`XXXX`) et le regroupement `_PRENOMS_RARES` sont exclus et comptés
-  dans le rapport. Les graphies qui ne diffèrent que par les accents (LEA, LÉA) sont fusionnées
+- Le script lit les colonnes par leur nom (formats 2024 et 2026) et ignore `rang`. Les lignes
+  d'année inconnue (`XXXX`) et le regroupement `_PRENOMS_RARES` des éditions antérieures sont exclus
+  et comptés dans le rapport ; l'édition 2026 n'en contient plus. Les graphies qui ne diffèrent que par les accents (LEA, LÉA) sont fusionnées
   sous la plus fréquente.
 - Les scripts s'exécutent avec Node 22 sans transpilation : leurs imports relatifs portent
   l'extension `.ts`.

@@ -33,6 +33,43 @@ describe('parseInseeCsv', () => {
   });
 });
 
+describe('parseInseeCsv – édition 2026', () => {
+  const csv2026 = readFileSync('data/fixtures/insee-2026-sample.csv', 'utf8');
+
+  it('lit les colonnes par leur nom et ignore la colonne rang', () => {
+    const { rows, invalid } = parseInseeCsv(csv2026);
+    expect(invalid).toEqual([]);
+    expect(rows).toHaveLength(6);
+    expect(rows[0]).toEqual({ sex: 1, name: 'GABRIEL', year: '2025', count: 4625 });
+    expect(rows[5]).toEqual({ sex: 1, name: 'MARIE CLAIRE', year: '1950', count: 5 });
+  });
+
+  it('accepte les colonnes dans un autre ordre', () => {
+    const { rows } = parseInseeCsv('valeur;periode;prenom;sexe\n10;2000;LOU;2\n');
+    expect(rows).toEqual([{ sex: 2, name: 'LOU', year: '2000', count: 10 }]);
+  });
+
+  it('signale une ligne qui n’a pas le nombre de colonnes de l’en-tête', () => {
+    const { invalid } = parseInseeCsv('sexe;prenom;periode;valeur;rang\n1;LOU;2000;10\n');
+    expect(invalid.map((entry) => entry.line)).toEqual([2]);
+  });
+
+  it('produit les mêmes données et repère l’arrondi au multiple de 5', () => {
+    const { data, report } = buildInseeData(csv2026, options);
+    expect(data.meta).toMatchObject({ yearMin: 1950, yearMax: 2025, nameCount: 3 });
+    expect(data.names[0]).toEqual(['Gabriel', 8825, 8825, 0, [74, 4200, 4625], []]);
+    expect(data.names.map((name) => name[0])).toEqual(['Gabriel', 'Léa', 'Marie Claire']);
+    expect(report.mergedVariants).toBe(1);
+    expect(report.countsRoundedTo).toBe(5);
+    expect(report.excluded.unknownYear.rows + report.excluded.rareNames.rows).toBe(0);
+    expect(validateInseeData(csv2026, data)).toEqual([]);
+  });
+
+  it('ne signale pas d’arrondi quand des effectifs ne sont pas multiples de 5', () => {
+    expect(buildInseeData(csv, options).report.countsRoundedTo).toBeNull();
+  });
+});
+
 describe('toDisplayLabel', () => {
   it.each([
     ['LÉA', 'Léa'],

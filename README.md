@@ -1,6 +1,6 @@
 # Explorateur de prénoms
 
-Rechercher, filtrer et trier les 32 157 prénoms donnés en France de 1900 à 2023, d'après le
+Rechercher, filtrer et trier les 43 459 prénoms donnés en France de 1900 à 2025, d'après le
 fichier des prénoms de l'Insee. L'application est entièrement statique : elle charge les données
 dans le navigateur, sans serveur ni base de données.
 
@@ -78,15 +78,18 @@ Les données publiées ([`public/data/insee.json`](public/data/insee.json)) sont
 le dépôt : le build en ligne ne les régénère pas. Pour les mettre à jour :
 
 1. Télécharger le fichier national au format CSV sur la page
-   [Fichier des prénoms](https://www.insee.fr/fr/statistiques/8205621) de l'Insee.
+   [Fichier des prénoms](https://www.insee.fr/fr/statistiques/8595130) de l'Insee.
 2. Le décompresser dans `data/raw/` (dossier ignoré par git et jamais publié).
 3. Lancer `npm run build:data`, puis `npm run validate:data`.
 4. Commiter `public/data/insee.json` et `public/data/insee.report.json`.
 
-Le script affiche un rapport : nombre de prénoms, plage d'années, taille du fichier et lignes
-exclues. Dans l'édition actuelle, 39 704 lignes d'année de naissance inconnue (926 369
-naissances) et le regroupement des prénoms rares (1 799 189 naissances) sont exclus, et les
-graphies qui ne diffèrent que par les accents (LEA, LÉA) sont fusionnées sous la plus fréquente.
+Le script affiche un rapport : nombre de prénoms, plage d'années, taille du fichier, lignes
+exclues et arrondi des effectifs. Il lit les colonnes par leur nom, et accepte donc le format de
+l'édition 2026 (`sexe;prenom;periode;valeur;rang`) comme celui des éditions précédentes
+(`sexe;preusuel;annais;nombre`). Les graphies qui ne diffèrent que par les accents (LEA, LÉA)
+sont fusionnées sous la plus fréquente. Les lignes d'année inconnue et le regroupement des
+prénoms rares, présents dans les éditions antérieures, sont exclus et comptés ; l'édition 2026
+n'en contient plus.
 
 ## Architecture
 
@@ -117,8 +120,8 @@ idb-keyval, Vitest, Playwright.
 
 ## Données, crédits et licence
 
-**Source : Insee, [Fichier des prénoms](https://www.insee.fr/fr/statistiques/8205621)**, édition
-parue le 8 juillet 2024 (naissances de 1900 à 2023).
+**Source : Insee, [Fichier des prénoms](https://www.insee.fr/fr/statistiques/8595130)**, édition
+parue le 16 juillet 2026 (naissances de 1900 à 2025).
 
 Selon les [mentions légales de l'Insee](https://www.insee.fr/fr/information/2008466), ces données
 sont mises à disposition sous la
@@ -128,7 +131,8 @@ mise à jour, et de ne pas en altérer le sens.
 
 À savoir sur ces données, d'après l'Insee : le fichier recense des naissances et non des personnes
 vivantes ; il est établi à partir des bulletins de naissance, et son exhaustivité n'est pas
-garantie avant 1946. Les traitements appliqués ici (exclusions et fusions décrites plus haut) font
-que les totaux affichés sont légèrement inférieurs à ceux du fichier d'origine.
+garantie avant 1946. Depuis l'édition 2026, **les effectifs sont arrondis au multiple de 5 le plus
+proche** : chaque nombre annuel affiché est donc approché, et les totaux sont des sommes
+d'effectifs arrondis. Les données avant 2012 ne couvrent pas Mayotte.
 
 Police : [Inter](https://rsms.me/inter/), sous licence SIL Open Font License 1.1.

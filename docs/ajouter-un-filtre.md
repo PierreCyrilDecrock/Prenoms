@@ -51,7 +51,7 @@ interface Filter<P> {
 7. **Contrôle.** Composant contrôlé (il reçoit `value` et appelle `onChange`). Utiliser les briques
    de `@/ui/controls` : `TextField`, `NumberField`, `ChoiceGroup`, `ToggleGroup` (libellés
    accessibles, cibles tactiles de 44 px).
-8. **Performance.** `test` est appelé pour chacun des 32 000 prénoms à chaque frappe : pas de
+8. **Performance.** `test` est appelé pour chacun des 43 000 prénoms à chaque frappe : pas de
    calcul coûteux par appel ; préparer une fois par jeu de paramètres (voir `letters.tsx`).
 
 ## Exemple complet : filtre « Origine (démo) »

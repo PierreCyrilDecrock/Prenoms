@@ -12,7 +12,7 @@ export function findInseeCsv(argument?: string): string {
   if (candidates.length === 0) {
     throw new Error(
       `Aucun fichier *nat*.csv dans ${RAW_DIR}/. Téléchargez le fichier national sur ` +
-        'https://www.insee.fr/fr/statistiques/8205621 et décompressez-le dans ce dossier.',
+        'https://www.insee.fr/fr/statistiques/8595130 et décompressez-le dans ce dossier.',
     );
   }
   if (candidates.length > 1) {

@@ -62,6 +62,12 @@ export function DevStep3() {
     ['· lignes illisibles', int(excluded.invalid.rows)],
     ['Prénoms sans année connue', `${int(excluded.namesWithoutKnownYear)} (écartés)`],
     ['Graphies fusionnées', `${int(mergedVariants)} (ex. Lea et Léa)`],
+    [
+      'Effectifs arrondis',
+      state.report.countsRoundedTo
+        ? `au multiple de ${state.report.countsRoundedTo} par l’Insee`
+        : 'non',
+    ],
     ['Fichier source', meta.sourceFile],
     ['Généré le', new Date(meta.generatedAt).toLocaleString('fr-FR')],
     ['Version du format', String(meta.formatVersion)],

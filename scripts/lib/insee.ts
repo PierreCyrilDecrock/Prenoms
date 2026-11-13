@@ -9,7 +9,16 @@ import {
 
 export const UNKNOWN_YEAR = 'XXXX';
 export const RARE_NAMES = '_PRENOMS_RARES';
-const EXPECTED_HEADER = 'sexe;preusuel;annais;nombre';
+/**
+ * Colonnes reconnues, par rôle. L'édition 2024 nomme ses colonnes sexe;preusuel;annais;nombre ;
+ * l'édition 2026 sexe;prenom;periode;valeur;rang. Les colonnes en plus (rang) sont ignorées.
+ */
+const COLUMNS = {
+  sex: ['sexe'],
+  name: ['preusuel', 'prenom'],
+  year: ['annais', 'periode'],
+  count: ['nombre', 'valeur'],
+} as const;
 
 export interface CsvRow {
   /** 1 = garçons, 2 = filles. */
@@ -27,23 +36,34 @@ export interface ParsedCsv {
   invalid: { line: number; text: string }[];
 }
 
-/** Lit le CSV de l'INSEE : UTF-8, séparateur « ; », en-tête sexe;preusuel;annais;nombre. */
+/** Lit le CSV de l'INSEE : UTF-8, séparateur « ; », colonnes repérées par leur nom. */
 export function parseInseeCsv(text: string): ParsedCsv {
   const lines = (text.charCodeAt(0) === 0xfeff ? text.slice(1) : text).split(/\r?\n/);
-  const header = lines[0]?.trim().toLowerCase();
-  if (header !== EXPECTED_HEADER) {
-    throw new Error(`En-tête inattendu : « ${lines[0]} » (attendu : « ${EXPECTED_HEADER} »).`);
+  const header = (lines[0] ?? '').split(';').map((column) => column.trim().toLowerCase());
+  const index = Object.fromEntries(
+    Object.entries(COLUMNS).map(([role, names]) => [
+      role,
+      header.findIndex((column) => (names as readonly string[]).includes(column)),
+    ]),
+  ) as Record<keyof typeof COLUMNS, number>;
+  if (Object.values(index).some((position) => position < 0)) {
+    throw new Error(
+      `En-tête inattendu : « ${lines[0]} » (colonnes attendues : sexe, preusuel ou prenom, ` +
+        'annais ou periode, nombre ou valeur).',
+    );
   }
   const rows: CsvRow[] = [];
   const invalid: ParsedCsv['invalid'] = [];
   for (let i = 1; i < lines.length; i++) {
     const text = lines[i]!;
     if (text.trim() === '') continue;
-    const cols = text.split(';');
-    const [sex, name, year, count] = cols.map((col) => col.trim());
+    const cols = text.split(';').map((col) => col.trim());
+    const [sex, name, year, count] = [index.sex, index.name, index.year, index.count].map(
+      (position) => cols[position],
+    );
     const validYear = year === UNKNOWN_YEAR || /^\d{4}$/.test(year ?? '');
     if (
-      cols.length !== 4 ||
+      cols.length !== header.length ||
       (sex !== '1' && sex !== '2') ||
       !name ||
       !validYear ||
@@ -194,6 +214,8 @@ export function buildInseeData(
       namesWithoutKnownYear: allNames.size - keptNames.size,
     },
     mergedVariants: keptNames.size - names.length,
+    // Édition 2026 : effectifs arrondis au multiple de 5 le plus proche.
+    countsRoundedTo: rows.length > 0 && rows.every((row) => row.count % 5 === 0) ? 5 : null,
   };
 
   return { data: { meta, names }, report };

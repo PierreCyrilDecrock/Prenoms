@@ -141,7 +141,7 @@ test.describe('clavier et lecteur d’écran', () => {
     const status = page.getByRole('status').filter({ hasText: 'prénoms' });
     await expect(status).toHaveCount(1);
     await page.getByRole('searchbox').fill('lea');
-    await expect(status).toHaveText('33 prénoms');
+    await expect(status).toHaveText('50 prénoms');
     await withFilters(page, async (panel) => {
       await filterGroup(panel, 'Accents').getByLabel('Avec accent').check();
     });

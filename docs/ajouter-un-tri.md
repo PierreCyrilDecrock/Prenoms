@@ -35,7 +35,7 @@ interface Sort {
 5. **`requires`.** Déclarer chaque source lue. Tant qu'elle n'est pas chargée, le tri est masqué
    du sélecteur et ignoré.
 6. **`id` stable.** Il figure dans les liens partagés (`#/?s=<id>&d=asc`).
-7. **Performance.** Trier 32 000 prénoms appelle `compare` plusieurs centaines de milliers de
+7. **Performance.** Trier 43 000 prénoms appelle `compare` plusieurs centaines de milliers de
    fois : lire des valeurs déjà calculées, sans créer d'objet.
 
 ## Exemple complet : tri « Syllabes (démo) »

@@ -26,18 +26,18 @@ test.describe('parcours principaux', () => {
     const search = page.getByRole('searchbox', { name: 'Rechercher un prénom' });
 
     await search.fill('lea');
-    await expect(page.getByTestId('result-count')).toHaveText('33 prénoms');
+    await expect(page.getByTestId('result-count')).toHaveText('50 prénoms');
     const plain = await settledTop(page, 10);
     await search.fill('Léa');
-    await expect(page.getByTestId('result-count')).toHaveText('33 prénoms');
+    await expect(page.getByTestId('result-count')).toHaveText('50 prénoms');
     expect(await settledTop(page, 10)).toEqual(plain);
     expect(plain[0]).toBe('Léa');
     await expect(rows(page).first().locator('mark')).toHaveText('Léa');
 
     await page.getByLabel('Mode de recherche').selectOption('contains');
-    await expect(page.getByTestId('result-count')).toHaveText('87 prénoms');
+    await expect(page.getByTestId('result-count')).toHaveText('132 prénoms');
     await page.getByLabel('Mode de recherche').selectOption('endsWith');
-    await expect(page.getByTestId('result-count')).toHaveText('24 prénoms');
+    await expect(page.getByTestId('result-count')).toHaveText('30 prénoms');
 
     await search.press('Escape');
     await expect(search).toHaveValue('');
@@ -58,14 +58,14 @@ test.describe('parcours principaux', () => {
     await withFilters(page, async (panel) => {
       await filterGroup(panel, 'Sexe et mixité').getByLabel('Filles').check();
     });
-    await expect(page.getByTestId('result-count')).toHaveText('16 834 prénoms');
+    await expect(page.getByTestId('result-count')).toHaveText('22 674 prénoms');
 
     await withFilters(page, async (panel) => {
       await filterGroup(panel, 'Tendance').getByLabel('En hausse').check();
       await filterGroup(panel, 'Longueur').getByLabel('Lettres max.').fill('4');
     });
     const combined = await resultCount(page);
-    expect(combined).toBeLessThan(6054);
+    expect(combined).toBeLessThan(7703);
     expect(combined).toBeGreaterThan(0);
 
     const chips = page.getByRole('list', { name: 'Filtres actifs' });
@@ -78,7 +78,7 @@ test.describe('parcours principaux', () => {
     }
 
     await chips.getByRole('button', { name: /Retirer le filtre Longueur/ }).click();
-    await expect(page.getByTestId('result-count')).toHaveText('6 054 prénoms');
+    await expect(page.getByTestId('result-count')).toHaveText('7 703 prénoms');
     await expect(chips.getByRole('button')).toHaveCount(2);
 
     await page.getByRole('button', { name: 'Tout réinitialiser' }).click();
@@ -98,7 +98,7 @@ test.describe('parcours principaux', () => {
     await openList(page);
     await page.getByLabel('Trier par').selectOption('alphabetical');
     await page.getByRole('button', { name: /Sens du tri : décroissant/ }).click();
-    await expect.poll(() => topNames(page, 3)).toEqual(['A', 'Aadam', 'Aadel']);
+    await expect.poll(() => topNames(page, 3)).toEqual(["A'Lia", 'Aaban', 'Aadam']);
     await page.getByRole('button', { name: /Sens du tri : croissant/ }).click();
     await expect.poll(async () => (await topNames(page, 1))[0]).toMatch(/^Zy/);
 
@@ -119,7 +119,7 @@ test.describe('parcours principaux', () => {
     const facts = page.getByRole('region', { name: 'Repères' });
     await expect(facts).toContainText('1998');
     await expect(facts).toContainText('1900');
-    await expect(facts).toContainText('2023');
+    await expect(facts).toContainText('2025');
     await expect(page).toHaveTitle('Camille – Explorateur de prénoms');
 
     await page.getByRole('link', { name: '← Tous les prénoms' }).click();
@@ -165,7 +165,7 @@ test.describe('parcours principaux', () => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(String(error)));
     await openList(page, 'q=lou&f.gender=zzz&f.inconnu=1&s=nimporte&m=x');
-    await expect(page.getByTestId('result-count')).toHaveText('233 prénoms');
+    await expect(page.getByTestId('result-count')).toHaveText('324 prénoms');
     await expect(page.getByLabel('Trier par')).toHaveValue('totalPopularity');
     expect(errors).toEqual([]);
   });
@@ -188,7 +188,7 @@ test.describe('parcours principaux', () => {
 
   test('export : CSV avec BOM et JSON de la liste filtrée', async ({ page }) => {
     await openList(page, 'q=l%C3%A9a&s=alphabetical&d=asc');
-    await expect(page.getByTestId('result-count')).toHaveText('33 prénoms');
+    await expect(page.getByTestId('result-count')).toHaveText('50 prénoms');
 
     await page.getByRole('button', { name: 'Exporter' }).click();
     const [csvDownload] = await Promise.all([
@@ -199,7 +199,7 @@ test.describe('parcours principaux', () => {
     const csv = await readFile(await csvDownload.path());
     expect(csv.subarray(0, 3).toString('hex')).toBe('efbbbf');
     const lines = csv.toString('utf8').slice(1).trimEnd().split('\r\n');
-    expect(lines).toHaveLength(34);
+    expect(lines).toHaveLength(51);
     expect(lines[0]).toContain('id;prenom;');
     expect(lines[0]).toContain('insee.total');
     expect(lines[1]).toMatch(/^lea;Léa;/);
@@ -212,7 +212,7 @@ test.describe('parcours principaux', () => {
     const json = JSON.parse(await readFile(await jsonDownload.path(), 'utf8')) as {
       prenom: string;
     }[];
-    expect(json).toHaveLength(33);
+    expect(json).toHaveLength(50);
     expect(json[0]!.prenom).toBe('Léa');
   });
 

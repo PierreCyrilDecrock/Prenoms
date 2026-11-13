@@ -42,7 +42,7 @@ for (const [file, size] of [
     flex-direction:column;justify-content:center;padding:0 96px;box-sizing:border-box">
     <img src="${svgUrl}" width="112" height="112" alt="">
     <h1 style="font-size:84px;line-height:1.05;margin:40px 0 0;letter-spacing:-2px">Explorateur de prénoms</h1>
-    <p style="font-size:36px;line-height:1.35;margin:24px 0 0;color:#5c5750;white-space:nowrap">Plus de 32 000 prénoms donnés en France depuis 1900.<br>Rechercher, filtrer, trier.</p>
+    <p style="font-size:36px;line-height:1.35;margin:24px 0 0;color:#5c5750;white-space:nowrap">Plus de 43 000 prénoms donnés en France depuis 1900.<br>Rechercher, filtrer, trier.</p>
     <p style="font-size:26px;margin:48px 0 0;color:#4338ca;font-weight:600">Source : Insee, fichier des prénoms</p>
   </body></html>`);
   await page.screenshot({ path: 'public/og.png' });

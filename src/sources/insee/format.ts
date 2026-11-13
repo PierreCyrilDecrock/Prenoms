@@ -66,6 +66,8 @@ export interface InseeReport {
   };
   /** Graphies fusionnées dans une autre entrée (ex. LEA et LÉA). */
   mergedVariants: number;
+  /** Pas d'arrondi des effectifs dans le fichier source (5 pour l'édition 2026), sinon null. */
+  countsRoundedTo?: number | null;
   /** Taille de insee.json, en octets. */
   size?: { raw: number; gzip: number };
 }

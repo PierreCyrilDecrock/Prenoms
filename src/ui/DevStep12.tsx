@@ -40,8 +40,8 @@ export function DevStep12() {
       const results: Check[] = [
         {
           label: 'Fichier brut de l’Insee non publié',
-          ok: await isAbsent(`${base}data/raw/prenoms-2023-nat.csv`),
-          detail: 'data/raw/prenoms-2023-nat.csv',
+          ok: await isAbsent(`${base}data/raw/prenoms-2025-nat.csv`),
+          detail: 'data/raw/prenoms-2025-nat.csv',
         },
         {
           label: 'Données publiées',
