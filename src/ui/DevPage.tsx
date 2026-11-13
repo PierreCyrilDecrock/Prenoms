@@ -5,6 +5,7 @@ import { DevStep3 } from '@/ui/DevStep3';
 import { DevStep4 } from '@/ui/DevStep4';
 import { DevStep5 } from '@/ui/DevStep5';
 import { DevStep6 } from '@/ui/DevStep6';
+import { DevStep7 } from '@/ui/DevStep7';
 import { colorTokens } from '@/ui/tokens';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -149,6 +150,10 @@ export function DevPage() {
 
       <Section title="Étape 6 – Filtres de la v1">
         <DevStep6 />
+      </Section>
+
+      <Section title="Étape 7 – Tris de la v1">
+        <DevStep7 />
       </Section>
     </main>
   );

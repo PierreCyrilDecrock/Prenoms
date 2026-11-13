@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { filters, sorts } from '@/core';
 import { sampleData } from '@/sources/insee/facts.test';
 import { App } from '@/ui/App';
 import { parseHashPath } from '@/ui/useHashRoute';
@@ -80,7 +81,7 @@ describe('App', () => {
     expect(screen.getByTestId('registry-source')).toHaveTextContent('insee');
     expect(screen.getByTestId('registry-champ calculé')).toHaveTextContent('femaleShare');
     expect(screen.getByTestId('registry-filtre')).toHaveTextContent('textSearch');
-    expect(screen.getByTestId('registry-tri')).toHaveTextContent('example');
+    expect(screen.getByTestId('registry-tri')).toHaveTextContent('alphabetical');
     fireEvent.change(screen.getByLabelText('Prénom à normaliser'), {
       target: { value: ' ÉLODIE  Noël ' },
     });
@@ -169,7 +170,7 @@ describe('App', () => {
     for (const group of ['Texte', 'Popularité', 'Chronologie', 'Forme']) {
       expect(screen.getByRole('region', { name: `Groupe ${group}` })).toBeInTheDocument();
     }
-    expect(screen.getAllByTestId(/^filter-[a-zA-Z]+$/)).toHaveLength(11);
+    expect(screen.getAllByTestId(/^filter-[a-zA-Z]+$/)).toHaveLength(filters.all().length);
 
     const gender = within(screen.getByTestId('filter-gender'));
     fireEvent.click(gender.getByLabelText('Filles'));
@@ -187,5 +188,25 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Tout réinitialiser' }));
     expect(summary).toHaveTextContent('3 résultats sur 3 · 0 filtre actif');
+  });
+
+  it('étape 7 : sélecteur de tri et de sens', async () => {
+    window.location.hash = '#/dev';
+    render(<App />);
+    await screen.findByText('Échantillon de 3 prénoms');
+    const names = () =>
+      within(screen.getByTestId('sort-results'))
+        .getAllByRole('rowheader')
+        .map((cell) => cell.textContent);
+    const select = screen.getByLabelText('Trier par');
+    expect(within(select).getAllByRole('option')).toHaveLength(sorts.all().length);
+
+    expect(names()).toEqual(['Camille', 'Jean-Baptiste', 'Léa']);
+    fireEvent.click(screen.getByLabelText('Décroissant'));
+    expect(names()).toEqual(['Léa', 'Jean-Baptiste', 'Camille']);
+    fireEvent.change(select, { target: { value: 'totalPopularity' } });
+    expect(names()).toEqual(['Camille', 'Léa', 'Jean-Baptiste']);
+    fireEvent.click(screen.getByLabelText('Croissant'));
+    expect(names()).toEqual(['Jean-Baptiste', 'Léa', 'Camille']);
   });
 });

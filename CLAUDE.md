@@ -121,6 +121,13 @@ ailleurs.
 - Tendance et popularité récente lisent `facts.insee.recent` et `facts.insee.previous`
   (10 dernières années de la source et 10 précédentes, précalculées au chargement).
 
+## Tris
+
+Les 6 tris de la v1 sont dans `src/sorts/` (un fichier `.ts` chacun, tests dans `sorts.test.ts`) :
+`alphabetical`, `totalPopularity`, `peakYear`, `length`, `recentPopularity`, `trend`. `compare`
+décrit l'ordre croissant ; le sens et le départage alphabétique sont gérés par `runQuery`.
+`trend` trie sur la variation en nombre de naissances (`recent − previous`).
+
 ## Jetons de design
 
 Définis en variables CSS dans `src/index.css` et exposés à Tailwind par `@theme`
