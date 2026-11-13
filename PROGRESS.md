@@ -2,21 +2,21 @@
 
 URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 
-| N°  | Étape                                   | Statut   | Date       | Commit    | URL de vérification                                |
-| --- | --------------------------------------- | -------- | ---------- | --------- | -------------------------------------------------- |
-| 1   | Initialisation et déploiement           | terminée | 2026-11-12 | `d282967` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 2   | Contrats du cœur                        | terminée | 2026-11-12 | `9b7f058` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 3   | Pipeline de données INSEE               | terminée | 2026-11-12 | `18153cf` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 4   | Source INSEE dans le navigateur         | terminée | 2026-11-13 | `33f23a6` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 5   | Moteur de requête                       | terminée | 2026-11-13 | `5de104e` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 6   | Filtres de la v1                        | terminée | 2026-11-13 | `9f4a648` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 7   | Tris de la v1                           | terminée | 2026-11-13 | `b4e595a` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 8   | Interface : structure et lisibilité     | terminée | 2026-11-13 | `7e3956d` | https://pierrecyrildecrock.github.io/Prenoms/      |
-| 9   | Animations et interactions              | terminée | 2026-11-13 | `98fa48d` | https://pierrecyrildecrock.github.io/Prenoms/      |
-| 10  | État dans l'URL, favoris, export        | terminée | 2026-11-13 | `cc6362e` | https://pierrecyrildecrock.github.io/Prenoms/      |
-| 11  | Tests, performance, accessibilité       | terminée | 2026-11-13 | `65aa5c5` | https://pierrecyrildecrock.github.io/Prenoms/      |
-| 12  | Finitions de publication                | terminée | 2026-11-13 | `6f64a93` | https://pierrecyrildecrock.github.io/Prenoms/      |
-| 13  | Documentation et preuve d'extensibilité | à faire  |            |           |                                                    |
+| N°  | Étape                                   | Statut   | Date       | Commit    | URL de vérification                                          |
+| --- | --------------------------------------- | -------- | ---------- | --------- | ------------------------------------------------------------ |
+| 1   | Initialisation et déploiement           | terminée | 2026-11-12 | `d282967` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 2   | Contrats du cœur                        | terminée | 2026-11-12 | `9b7f058` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 3   | Pipeline de données INSEE               | terminée | 2026-11-12 | `18153cf` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 4   | Source INSEE dans le navigateur         | terminée | 2026-11-13 | `33f23a6` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 5   | Moteur de requête                       | terminée | 2026-11-13 | `5de104e` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 6   | Filtres de la v1                        | terminée | 2026-11-13 | `9f4a648` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 7   | Tris de la v1                           | terminée | 2026-11-13 | `b4e595a` | https://pierrecyrildecrock.github.io/Prenoms/#/dev           |
+| 8   | Interface : structure et lisibilité     | terminée | 2026-11-13 | `7e3956d` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 9   | Animations et interactions              | terminée | 2026-11-13 | `98fa48d` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 10  | État dans l'URL, favoris, export        | terminée | 2026-11-13 | `cc6362e` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 11  | Tests, performance, accessibilité       | terminée | 2026-11-13 | `65aa5c5` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 12  | Finitions de publication                | terminée | 2026-11-13 | `6f64a93` | https://pierrecyrildecrock.github.io/Prenoms/                |
+| 13  | Documentation et preuve d'extensibilité | terminée | 2026-11-13 | `d909bc7` | https://github.com/PierreCyrilDecrock/Prenoms/tree/main/docs |
 
 ## Journal
 
@@ -282,3 +282,58 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
   - l'adresse publique vit dans `.env` (`VITE_SITE_URL`) ; à changer si le site déménage.
 - Défaut de test corrigé : les scénarios de publication interrogeaient le serveur hors du
   navigateur, ce qui échouait contre le site publié depuis l'environnement de développement.
+
+### Étape 13 – 2026-11-13
+
+- Commits `0b8506e` (guides), `4b789ae` (tests), `b54c697` (preuve), `f38ce14` (retrait de la
+  démo), `d909bc7` (section `#/dev`). Workflow vert, `version.json` renvoie `d909bc7`.
+- Guides : `docs/ajouter-une-source.md`, `docs/ajouter-un-filtre.md`, `docs/ajouter-un-tri.md`,
+  chacun avec le contrat, les règles, un exemple complet et la liste exacte des fichiers à créer.
+  Ils sont reliés au README et à `CLAUDE.md`.
+- Méthode de la preuve : les 7 fichiers de la démo ont été créés par un script qui recopie les
+  blocs de code des guides, sans aucune retouche (contrôle `cmp` : identiques).
+- **Première tentative : 21 tests en échec**, sans qu'aucun code de l'application ne soit en
+  cause :
+  - 3 tests supposaient que les registres ne contiennent que les filtres de la v1 (groupe connu,
+    source INSEE obligatoire, un jeu d'essai d'URL par filtre) ;
+  - 18 tests d'interface supposaient que l'INSEE est la seule source : les prénoms de la démo
+    s'ajoutaient à leurs 3 prénoms d'essai.
+
+  Correction (commit `4b789ae`, avant la preuve) : vérifications propres à la v1 limitées aux
+  modules livrés, tests d'interface limités à la source INSEE (`src/testing/registries.ts`),
+  décomptes faits sur les modules disponibles. Cela modifie des fichiers de test, dont deux dans
+  `src/ui` ; aucun fichier de code de `src/core` ni de `src/ui`.
+
+- **Deuxième tentative, avec les mêmes fichiers** : types, lint, 469 tests, build et 71 scénarios
+  Playwright verts. `git diff --stat` du commit de preuve `b54c697` :
+
+  ```text
+   src/filters/demoOrigin.test.tsx | 41 +++++++++++++++++++++++++++++++++++++++++
+   src/filters/demoOrigin.tsx      | 37 +++++++++++++++++++++++++++++++++++++
+   src/sorts/demoSyllables.test.ts | 26 ++++++++++++++++++++++++++
+   src/sorts/demoSyllables.ts      | 12 ++++++++++++
+   src/sources/demo/facts.ts       | 19 +++++++++++++++++++
+   src/sources/demo/index.test.ts  | 20 ++++++++++++++++++++
+   src/sources/demo/index.ts       | 34 ++++++++++++++++++++++++++++++++++
+   7 files changed, 189 insertions(+)
+  ```
+
+  Aucun fichier de `src/core` ni de `src/ui`.
+
+- Vérifié dans le site construit avec la démo : groupe « Démo » dans le panneau ; filtre origine
+  hébraïque = 5 prénoms (Marie, Jean, Léa, Gabriel, Nathan) avec sa pastille ; tri « Syllabes
+  (démo) » décroissant = Gabriel en tête ; lien partagé identique ; colonnes `demo.origin` et
+  `demo.syllables` dans l'export CSV ; source listée sur `#/dev`.
+- Démo retirée ensuite (commit `f38ce14`) : la preuve reste dans l'historique et dans les
+  exemples des guides. Site publié vérifié : aucun groupe ni tri démo, `#/dev` indique « source
+  factice demo absente », 71 scénarios Playwright verts.
+- Précisions ajoutées aux guides après la preuve : la forme affichée d'un prénom vient de la
+  première source dans l'ordre alphabétique des dossiers ; groupes et filtres suivent l'ordre
+  alphabétique des fichiers.
+- Limites restantes, notées dans les guides ou relevées ici :
+  - les lignes et la fiche n'affichent que les statistiques INSEE (`src/ui/inseeView.ts`) : afficher
+    les faits d'une nouvelle source demande de modifier `src/ui` ;
+  - les groupes du panneau suivent l'ordre des fichiers (Forme apparaît en premier), pas un ordre
+    choisi ;
+  - un lien qui ne contient que des paramètres inconnus (par exemple un ancien lien de la démo)
+    affiche la bonne vue, mais l'adresse n'est pas nettoyée.
