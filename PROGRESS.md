@@ -10,7 +10,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | 4   | Source INSEE dans le navigateur         | terminée | 2026-11-13 | `33f23a6` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 5   | Moteur de requête                       | terminée | 2026-11-13 | `5de104e` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 6   | Filtres de la v1                        | terminée | 2026-11-13 | `9f4a648` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 7   | Tris de la v1                           | à faire  |            |           |                                                    |
+| 7   | Tris de la v1                           | terminée | 2026-11-13 | `b4e595a` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 8   | Interface : structure et lisibilité     | à faire  |            |           |                                                    |
 | 9   | Animations et interactions              | à faire  |            |           |                                                    |
 | 10  | État dans l'URL, favoris, export        | à faire  |            |           |                                                    |
@@ -103,4 +103,26 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 - Code partagé hors de `src/filters/` (tout `.tsx` de ce dossier est pris pour un filtre) :
   `src/ui/controls.tsx` et `src/state/urlParams.ts`.
 - Filtre factice `example` retiré ; reste le tri factice jusqu'à l'étape 7.
+- `src/core` non modifié à cette étape.
+
+### Étape 7 – 2026-11-13
+
+- Commit `b4e595a`, workflow vert. Vérifié sur l'URL publiée avec un navigateur automatisé :
+  `version.json` renvoie ce SHA ; les 6 tris donnent un ordre plausible dans les deux sens
+  (popularité totale décroissante : Marie, Jean, Pierre, Michel ; popularité récente : Gabriel,
+  Léo, Raphaël ; tendance décroissante : Eden, Liam, Mia), en 2 à 30 ms sur 32 157 prénoms.
+- Preuve d'extensibilité : ajout temporaire de `src/sorts/vowelCount.ts`, puis lint, 311 tests
+  et build verts, le tri étant présent dans le build. `git status --short` ne montrait que :
+
+  ```text
+  ?? src/sorts/vowelCount.ts
+  ```
+
+  Le fichier a ensuite été retiré.
+
+- Défaut trouvé par cette preuve et corrigé : un test d'interface comptait exactement 6 tris
+  (et 11 filtres). Il lit maintenant la taille des registres.
+- Choix : `trend` trie sur la variation en nombre de naissances (10 dernières années moins les
+  10 précédentes), pas en pourcentage, pour que les prénoms très rares ne dominent pas.
+- Tri factice `example` retiré : il ne reste plus aucun module factice.
 - `src/core` non modifié à cette étape.
