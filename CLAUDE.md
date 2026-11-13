@@ -86,6 +86,18 @@ Autres règles :
 - Les scripts s'exécutent avec Node 22 sans transpilation : leurs imports relatifs portent
   l'extension `.ts`.
 
+## Chargement dans le navigateur
+
+- `src/sources/insee/index.ts` lit d'abord `insee.report.json` (petit, jamais mis en cache HTTP),
+  puis réutilise le cache IndexedDB si la version de format et la date de génération sont
+  identiques ; sinon il télécharge `insee.json` et remplit le cache.
+- Les faits d'un prénom sont typés par `InseeFacts` (`src/sources/insee/facts.ts`), avec les aides
+  `getInseeFacts`, `birthsInYear` et `birthsBetween`.
+- `src/state/namesStore.ts` (Zustand) charge toutes les sources au démarrage, les fusionne avec
+  `mergeSources` (dans `src/core`) et expose `entries`, `status`, `error`, `loadedSources`.
+- Un champ calculé qui lit une source déclare `requires` et importe ses types depuis le dossier
+  de cette source.
+
 ## Jetons de design
 
 Définis en variables CSS dans `src/index.css` et exposés à Tailwind par `@theme`

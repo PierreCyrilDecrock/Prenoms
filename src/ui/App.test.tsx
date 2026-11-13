@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { sampleData } from '@/sources/insee/facts.test';
 import { App } from '@/ui/App';
 import { parseHashPath } from '@/ui/useHashRoute';
 
@@ -40,7 +41,11 @@ describe('App', () => {
   beforeEach(() => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => new Response(JSON.stringify(report))),
+      vi.fn(async (url: string) =>
+        url.includes('insee.report.json')
+          ? new Response(JSON.stringify(report))
+          : new Response(JSON.stringify(sampleData)),
+      ),
     );
   });
 
@@ -72,9 +77,10 @@ describe('App', () => {
   it('étape 2 : liste les registres et normalise un prénom en direct', () => {
     window.location.hash = '#/dev';
     render(<App />);
-    for (const kind of ['source', 'champ calculé', 'filtre', 'tri']) {
-      expect(screen.getByTestId(`registry-${kind}`)).toHaveTextContent('example');
-    }
+    expect(screen.getByTestId('registry-source')).toHaveTextContent('insee');
+    expect(screen.getByTestId('registry-champ calculé')).toHaveTextContent('femaleShare');
+    expect(screen.getByTestId('registry-filtre')).toHaveTextContent('example');
+    expect(screen.getByTestId('registry-tri')).toHaveTextContent('example');
     fireEvent.change(screen.getByLabelText('Prénom à normaliser'), {
       target: { value: ' ÉLODIE  Noël ' },
     });
@@ -113,5 +119,19 @@ describe('App', () => {
     window.location.hash = '#/dev';
     render(<App />);
     expect(await screen.findByRole('alert')).toHaveTextContent('HTTP 404');
+  });
+
+  it('étape 4 : charge les prénoms au démarrage et les affiche', async () => {
+    render(<App />);
+    expect(await screen.findByText('3 prénoms chargés.')).toBeInTheDocument();
+    await act(async () => {
+      window.location.hash = '#/dev';
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    });
+    expect(screen.getByTestId('load-status')).toHaveTextContent('3 prénoms chargés');
+    expect(screen.getByTestId('origin-insee')).toHaveTextContent('réseau');
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
+    expect(screen.getByText('Échantillon de 3 prénoms')).toBeInTheDocument();
+    expect(screen.getByText(/"femaleShare":0.769/)).toBeInTheDocument();
   });
 });

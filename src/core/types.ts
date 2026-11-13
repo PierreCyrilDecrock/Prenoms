@@ -36,6 +36,8 @@ export interface DataSource {
   label: string;
   /** onProgress reçoit une valeur entre 0 et 1. */
   load(onProgress?: (progress: number) => void): Promise<SourceData>;
+  /** Vide le cache local de la source, si elle en a un. */
+  clearCache?(): Promise<void>;
 }
 
 /** Champ calculé : src/derived/<id>.ts */

@@ -1,7 +1,10 @@
 import { motion } from 'motion/react';
+import { useNamesStore } from '@/state/namesStore';
 import { durations, easings } from '@/ui/tokens';
 
 export function HomePage() {
+  const status = useNamesStore((state) => state.status);
+  const count = useNamesStore((state) => state.entries.length);
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col justify-center gap-6 px-4 py-12">
       <motion.div
@@ -19,6 +22,12 @@ export function HomePage() {
           données de l’INSEE. Tout se passe dans votre navigateur.
         </p>
       </motion.div>
+      {/* Temporaire (étape 4) : sera remplacé par l'application à l'étape 8. */}
+      <p aria-live="polite" data-testid="home-count" className="text-ink-muted">
+        {status === 'ready' && `${count.toLocaleString('fr-FR')} prénoms chargés.`}
+        {status === 'loading' && 'Chargement des prénoms…'}
+        {status === 'error' && 'Les prénoms n’ont pas pu être chargés.'}
+      </p>
       <p>
         <a
           href="#/dev"
