@@ -8,7 +8,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | 2   | Contrats du cœur                        | terminée | 2026-11-12 | `9b7f058` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 3   | Pipeline de données INSEE               | terminée | 2026-11-12 | `18153cf` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 4   | Source INSEE dans le navigateur         | terminée | 2026-11-13 | `33f23a6` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 5   | Moteur de requête                       | à faire  |            |           |                                                    |
+| 5   | Moteur de requête                       | terminée | 2026-11-13 | `5de104e` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 6   | Filtres de la v1                        | à faire  |            |           |                                                    |
 | 7   | Tris de la v1                           | à faire  |            |           |                                                    |
 | 8   | Interface : structure et lisibilité     | à faire  |            |           |                                                    |
@@ -74,3 +74,15 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
   la forme affichée ; `peakYear` retient l'année la plus ancienne à égalité.
 - Source et champ calculé factices `example` retirés ; restent le filtre et le tri factices.
 - Compteur temporaire sur l'accueil, à retirer à l'étape 8.
+
+### Étape 5 – 2026-11-13
+
+- Commit `5de104e`, workflow vert. Vérifié sur l'URL publiée avec un navigateur automatisé :
+  `version.json` renvoie ce SHA ; « lea » et « Léa » donnent les mêmes 33 résultats ; chaque
+  recherche sur les 32 157 prénoms répond en moins de 5 ms.
+- Test de performance : 5 filtres, une recherche et un tri sur 50 000 entrées synthétiques en
+  6,8 ms (budget : 100 ms).
+- Choix : `runQuery(entries, query, context)` reçoit les registres et les sources chargées par
+  `context`, ce qui le garde pur et testable avec des modules factices ; sans tri, l'ordre
+  d'entrée est conservé ; le départage alphabétique reste croissant même en tri décroissant.
+- Aucun filtre ni tri réel créé à cette étape.
