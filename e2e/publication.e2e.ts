@@ -1,4 +1,22 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+/**
+ * Télécharge une adresse depuis la page elle-même (relative au site), pour passer par le même
+ * réseau que le navigateur. Le texte n'est lu que pour les contenus textuels.
+ */
+async function fetchInPage(page: Page, url: string) {
+  return page.evaluate(async (target) => {
+    const response = await fetch(new URL(target, document.baseURI).href, { cache: 'no-store' });
+    const type = response.headers.get('content-type') ?? '';
+    const textual = /json|text|svg|csv/.test(type);
+    return {
+      ok: response.ok,
+      status: response.status,
+      type,
+      text: textual ? await response.text() : '',
+    };
+  }, url);
+}
 
 test.describe('publication', () => {
   test('la page a son titre, sa description et ses balises d’aperçu de lien', async ({ page }) => {
@@ -12,52 +30,48 @@ test.describe('publication', () => {
     expect(await content('meta[property="og:image"]')).toMatch(/^https:\/\/.+\/Prenoms\/og\.png$/);
   });
 
-  test('icône, manifest et image d’aperçu sont servis sous le sous-chemin', async ({
-    page,
-    request,
-  }) => {
+  test('icône, manifest et image d’aperçu sont servis sous le sous-chemin', async ({ page }) => {
     await page.goto('./');
     const href = (selector: string) => page.locator(selector).first().getAttribute('href');
     const iconHref = await href('link[rel="icon"]');
     const manifestHref = await href('link[rel="manifest"]');
     expect(iconHref).toMatch(/\/Prenoms\/favicon\.svg$/);
 
-    const origin = new URL(page.url()).origin;
-    const icon = await request.get(origin + iconHref!);
-    expect(icon.ok()).toBe(true);
-    expect(icon.headers()['content-type']).toContain('svg');
+    const icon = await fetchInPage(page, iconHref!);
+    expect(icon.ok).toBe(true);
+    expect(icon.type).toContain('svg');
 
-    const manifestResponse = await request.get(origin + manifestHref!);
-    expect(manifestResponse.ok()).toBe(true);
-    const manifest = (await manifestResponse.json()) as { name: string; icons: { src: string }[] };
+    const manifestResponse = await fetchInPage(page, manifestHref!);
+    expect(manifestResponse.ok).toBe(true);
+    const manifest = JSON.parse(manifestResponse.text) as {
+      name: string;
+      icons: { src: string }[];
+    };
     expect(manifest.name).toBe('Explorateur de prénoms');
+    const manifestUrl = new URL(manifestHref!, page.url()).href;
     for (const item of manifest.icons) {
-      const response = await request.get(new URL(item.src, origin + manifestHref!).href);
-      expect(response.ok(), item.src).toBe(true);
+      const response = await fetchInPage(page, new URL(item.src, manifestUrl).href);
+      expect(response.ok, item.src).toBe(true);
     }
 
-    const image = await request.get(new URL('og.png', page.url().split('#')[0]).href);
-    expect(image.ok()).toBe(true);
-    expect(image.headers()['content-type']).toContain('image/png');
+    const image = await fetchInPage(page, 'og.png');
+    expect(image.ok).toBe(true);
+    expect(image.type).toContain('image/png');
   });
 
   test('le fichier brut de l’Insee n’est pas publié, les données générées le sont', async ({
     page,
-    request,
   }) => {
     await page.goto('./');
-    const root = page.url().split('#')[0]!;
-    const raw = await request.get(new URL('data/raw/prenoms-2023-nat.csv', root).href);
+    const raw = await fetchInPage(page, 'data/raw/prenoms-2023-nat.csv');
     // Une erreur 404, ou la page de repli du serveur local : jamais le CSV.
-    const rawBody = await raw.text();
-    expect(raw.status() === 404 || rawBody.includes('<!doctype html>')).toBe(true);
-    expect(rawBody).not.toContain('sexe;preusuel');
+    expect(raw.status === 404 || raw.text.includes('<!doctype html>')).toBe(true);
+    expect(raw.text).not.toContain('sexe;preusuel');
 
-    const data = await request.get(new URL('data/insee.report.json', root).href);
-    expect(data.ok()).toBe(true);
-    expect(((await data.json()) as { meta: { nameCount: number } }).meta.nameCount).toBeGreaterThan(
-      30_000,
-    );
+    const data = await fetchInPage(page, 'data/insee.report.json');
+    expect(data.ok).toBe(true);
+    const report = JSON.parse(data.text) as { meta: { nameCount: number } };
+    expect(report.meta.nameCount).toBeGreaterThan(30_000);
   });
 
   test('le pied de page crédite la source et mène discrètement au diagnostic', async ({ page }) => {
