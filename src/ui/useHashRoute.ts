@@ -18,9 +18,14 @@ export function supportsViewTransitions(): boolean {
 }
 
 function subscribe(onChange: () => void): () => void {
+  let lastPath = parseHashPath(window.location.hash);
   const onHashChange = () => {
     const doc = document as TransitionDocument;
-    if (doc.startViewTransition && !shouldReduceMotion()) {
+    const path = parseHashPath(window.location.hash);
+    const pageChanged = path !== lastPath;
+    lastPath = path;
+    // Pas de transition de page quand seuls les paramètres de la liste changent.
+    if (pageChanged && doc.startViewTransition && !shouldReduceMotion()) {
       // Transition fluide entre deux pages : le rendu se fait dans la transition.
       doc.startViewTransition(() => flushSync(onChange));
     } else {

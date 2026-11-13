@@ -61,7 +61,7 @@ describe('App', () => {
     expect(screen.getByText('Page de diagnostic')).toBeVisible();
     expect(screen.getByTestId('build-sha')).not.toBeEmptyDOMElement();
     expect(screen.getByTestId('build-date')).toHaveAttribute('dateTime');
-    expect(screen.getByRole('heading', { name: /Étape 1/ })).toBeVisible();
+    expect(screen.getByRole('heading', { name: /Étape 1 –/ })).toBeVisible();
   });
 
   it('étape 2 : liste les registres et normalise un prénom en direct', () => {
@@ -242,5 +242,18 @@ describe('App', () => {
     fireEvent.click(screen.getByLabelText('Réduire les animations'));
     fireEvent.click(screen.getByRole('button', { name: 'Afficher une notification' }));
     expect(await screen.findByText('Exemple de notification')).toBeInTheDocument();
+  });
+
+  it('étape 10 : affiche le lien de la vue en cours, les favoris et l’export', async () => {
+    window.location.hash = '#/dev';
+    render(<App />);
+    await screen.findByText('Échantillon de 3 prénoms');
+    expect(screen.getByTestId('current-href')).toHaveAttribute('href', '#/');
+    expect(screen.getByTestId('favorites-count')).toHaveTextContent('0 favori');
+    expect(screen.getByRole('link', { name: 'Favoris uniquement' })).toHaveAttribute(
+      'href',
+      '#/?f.favorites=only',
+    );
+    expect(screen.getByRole('button', { name: 'Exporter' })).toBeEnabled();
   });
 });

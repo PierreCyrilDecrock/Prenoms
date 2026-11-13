@@ -1,5 +1,7 @@
 import { useEffect, useMemo, type ReactNode } from 'react';
 import { useNamesStore } from '@/state/namesStore';
+import { useQueryStore } from '@/state/queryStore';
+import { listHref } from '@/state/urlState';
 import { NAME_TRANSITION, useNavStore } from '@/state/navStore';
 import { haptic } from '@/state/settingsStore';
 import { useToastStore } from '@/state/toastStore';
@@ -22,11 +24,13 @@ function Stat({ label, children }: { label: string; children: ReactNode }) {
 }
 
 function Shell({ children }: { children: ReactNode }) {
+  // Le retour rouvre la liste avec la recherche, les filtres et le tri en cours.
+  const backHref = useQueryStore(listHref);
   return (
     <PageTransition>
       <div className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-4 py-4">
         <nav aria-label="Navigation">
-          <a href="#/" className="inline-flex min-h-11 items-center text-accent underline">
+          <a href={backHref} className="inline-flex min-h-11 items-center text-accent underline">
             ← Tous les prénoms
           </a>
         </nav>
@@ -78,6 +82,7 @@ export function NamePage({ id }: { id: string }) {
     );
   }
   if (!entry) {
+    const backHref = listHref(useQueryStore.getState());
     return (
       <Shell>
         <main className="flex flex-col items-start gap-4 py-8">
@@ -85,7 +90,7 @@ export function NamePage({ id }: { id: string }) {
           <p className="text-ink-muted">
             Aucun prénom ne correspond à « {id} » dans les données chargées.
           </p>
-          <a href="#/" className={primaryButtonClass}>
+          <a href={backHref} className={primaryButtonClass}>
             Revenir à la liste
           </a>
         </main>

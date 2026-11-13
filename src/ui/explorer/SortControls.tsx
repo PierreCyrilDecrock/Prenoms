@@ -19,7 +19,7 @@ export function SortControls() {
   const descending = direction === 'desc';
 
   return (
-    <div className="flex w-full items-center gap-2 sm:w-auto">
+    <div className="flex min-w-0 flex-1 items-center gap-2 sm:flex-none">
       <label htmlFor="sort" className="sr-only text-sm text-ink-muted sm:not-sr-only">
         Trier par
       </label>
@@ -46,7 +46,7 @@ export function SortControls() {
         className={buttonClass}
       >
         <span aria-hidden="true">{descending ? '↓' : '↑'}</span>
-        {descending ? 'Décroissant' : 'Croissant'}
+        <span className="hidden sm:inline">{descending ? 'Décroissant' : 'Croissant'}</span>
       </button>
     </div>
   );

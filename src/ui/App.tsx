@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNamesStore } from '@/state/namesStore';
+import { useUrlSync } from '@/state/useUrlSync';
 import { DevPage } from '@/ui/DevPage';
 import { MotionRoot } from '@/ui/motion';
 import { Toaster } from '@/ui/Toaster';
@@ -19,6 +20,7 @@ function safeDecode(value: string): string {
 
 export function App() {
   const route = useHashRoute();
+  useUrlSync();
 
   // Charge toutes les sources enregistrées au démarrage.
   useEffect(() => {

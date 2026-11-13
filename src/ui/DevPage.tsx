@@ -7,6 +7,7 @@ import { DevStep5 } from '@/ui/DevStep5';
 import { DevStep6 } from '@/ui/DevStep6';
 import { DevStep7 } from '@/ui/DevStep7';
 import { DevStep8 } from '@/ui/DevStep8';
+import { DevStep10 } from '@/ui/DevStep10';
 import { DevStep9 } from '@/ui/DevStep9';
 import { colorTokens } from '@/ui/tokens';
 
@@ -164,6 +165,10 @@ export function DevPage() {
 
       <Section title="Étape 9 – Animations et interactions">
         <DevStep9 />
+      </Section>
+
+      <Section title="Étape 10 – État dans l’URL, favoris, export">
+        <DevStep10 />
       </Section>
     </main>
   );

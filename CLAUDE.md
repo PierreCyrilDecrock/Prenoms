@@ -144,6 +144,23 @@ décrit l'ordre croissant ; le sens et le départage alphabétique sont gérés 
 - Répartition filles/garçons : toujours une barre bicolore ET un libellé ; sur la courbe, les
   deux sexes se distinguent par la couleur et par le tracé (plein ou pointillé).
 
+## État dans l'URL, favoris, export
+
+- Format du hash : `#/?q=mar&m=c&f.gender=f&f.length=3-6&s=alphabetical&d=asc` (`q` texte, `m`
+  mode, `f.<id>` paramètres d'un filtre actif écrits par son `toUrl`, `s` tri, `d` sens). Les
+  valeurs par défaut sont omises. `src/state/urlState.ts` sérialise et lit ; un paramètre inconnu
+  ou invalide est ignoré.
+- `useUrlSync()` (monté dans `App`) : l'URL remplit la requête à l'ouverture et au retour
+  arrière ; chaque changement de la requête réécrit l'URL (`replaceState` pour une frappe,
+  `pushState` pour mode, tri, sens, filtre ajouté ou retiré). N'agit que sur la page de liste.
+- Le lien de retour d'une fiche est `listHref(requête en cours)`, jamais `#/` nu, qui viderait
+  la recherche.
+- Favoris : `src/state/favoritesStore.ts`, conservés en `localStorage` (`prenoms:favorites`). Le
+  filtre `favorites` est un filtre ordinaire de `src/filters/` ; `useResults()` dépend de l'état
+  des favoris pour se recalculer.
+- Export : `src/state/exportData.ts`. CSV avec BOM, séparateur `;`, décimales à virgule, une
+  colonne par champ calculé et par fait simple (`insee.total`…) ; JSON complet avec les séries.
+
 ## Animations
 
 - Réglages dans `src/state/settingsStore.ts` (conservés en `localStorage`) : « Réduire les

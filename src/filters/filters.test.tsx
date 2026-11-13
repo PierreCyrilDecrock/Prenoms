@@ -2,8 +2,10 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { derivedFields, filters, mergeSources, runQuery, sorts, type AnyFilter } from '@/core';
 import { toRecords } from '@/sources/insee/facts';
 import type { InseeNameRow, InseeSeries } from '@/sources/insee/format';
+import { useFavoritesStore } from '@/state/favoritesStore';
 import accents from './accents';
 import compound from './compound';
+import favorites from './favorites';
 import gender from './gender';
 import initial from './initial';
 import length from './length';
@@ -82,7 +84,7 @@ const EXPECTED_IDS = [
   'totalPopularity',
   'trend',
 ];
-const GROUPS = ['Texte', 'Popularité', 'Chronologie', 'Forme'];
+const GROUPS = ['Texte', 'Popularité', 'Chronologie', 'Forme', 'Favoris'];
 
 describe('filtres de la v1 – contrat commun', () => {
   it('les 11 filtres sont découverts par le registre', () => {
@@ -357,6 +359,26 @@ describe('accents', () => {
   it('sérialise son choix', () => {
     expect(accents.toUrl({ value: 'with' })).toBe('with');
     expect(accents.fromUrl('without')).toEqual({ value: 'without' });
+  });
+});
+
+describe('favorites', () => {
+  afterEach(() => useFavoritesStore.getState().clear());
+
+  it('ne garde que les prénoms marqués favoris', () => {
+    expect(pass(favorites, { value: 'only' })).toEqual([]);
+    useFavoritesStore.getState().toggle('lea');
+    useFavoritesStore.getState().toggle('axel');
+    expect(pass(favorites, { value: 'only' })).toEqual(['Léa', 'Axel']);
+    useFavoritesStore.getState().toggle('lea');
+    expect(pass(favorites, { value: 'only' })).toEqual(['Axel']);
+  });
+
+  it('sérialise son choix', () => {
+    expect(favorites.toUrl({ value: 'only' })).toBe('only');
+    expect(favorites.fromUrl('only')).toEqual({ value: 'only' });
+    expect(favorites.fromUrl('tous')).toEqual({ value: '' });
+    expect(favorites.isActive({ value: '' })).toBe(false);
   });
 });
 

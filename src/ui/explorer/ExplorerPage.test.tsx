@@ -1,5 +1,6 @@
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { sampleData } from '@/sources/insee/facts.test';
+import { FAVORITES_KEY, useFavoritesStore } from '@/state/favoritesStore';
 import { initialQuery, useQueryStore } from '@/state/queryStore';
 import { App } from '@/ui/App';
 import { niceMax } from './YearChart';
@@ -32,7 +33,9 @@ async function go(hash: string) {
 
 beforeEach(() => {
   failData = false;
+  window.history.replaceState(null, '', '#/');
   useQueryStore.setState(initialQuery);
+  useFavoritesStore.getState().clear();
   vi.stubGlobal(
     'fetch',
     vi.fn(async (url: string) => {
@@ -285,6 +288,159 @@ describe('animations et interactions', () => {
     await go('#/prenom/camille');
     const title = screen.getByRole('heading', { level: 1, name: 'Camille' });
     expect(title.querySelector('span')?.style.viewTransitionName).toBe('name-title');
+  });
+});
+
+describe('état dans l’URL', () => {
+  it('un lien restaure exactement la même vue', async () => {
+    await renderApp();
+    cleanup();
+    useQueryStore.setState(initialQuery);
+    window.history.replaceState(null, '', '#/?q=a&m=c&f.compound=exclude&s=alphabetical&d=desc');
+    render(<App />);
+    await screen.findByRole('list', { name: 'Résultats' });
+
+    await waitFor(() => expect(names()).toEqual(['Léa', 'Camille']));
+    expect(screen.getByRole('searchbox')).toHaveValue('a');
+    expect(screen.getByLabelText('Mode de recherche')).toHaveValue('contains');
+    expect(screen.getByLabelText('Trier par')).toHaveValue('alphabetical');
+    expect(screen.getByRole('button', { name: /Sens du tri : décroissant/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Retirer le filtre Prénom composé : exclus' }),
+    ).toBeInTheDocument();
+  });
+
+  it('ignore un paramètre invalide et remet l’URL au propre', async () => {
+    window.history.replaceState(null, '', '#/?q=le&f.gender=zzz&f.inconnu=1&s=nimporte&m=x');
+    render(<App />);
+    await screen.findByRole('list', { name: 'Résultats' });
+    await waitFor(() => expect(names()).toEqual(['Léa']));
+    expect(screen.getByLabelText('Trier par')).toHaveValue('totalPopularity');
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'lea' } });
+    expect(window.location.hash).toBe('#/?q=lea');
+  });
+
+  it('écrit l’état dans l’URL : replaceState pour une frappe, pushState pour un changement discret', async () => {
+    await renderApp();
+    const push = vi.spyOn(window.history, 'pushState');
+    const replace = vi.spyOn(window.history, 'replaceState');
+
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'l' } });
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'lé' } });
+    expect(window.location.hash).toBe('#/?q=l%C3%A9');
+    expect(replace).toHaveBeenCalledTimes(2);
+    expect(push).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText('Trier par'), { target: { value: 'length' } });
+    expect(window.location.hash).toBe('#/?q=l%C3%A9&s=length&d=desc');
+    expect(push).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Filtres' }));
+    const drawer = within(screen.getByRole('dialog'));
+    fireEvent.click(
+      within(drawer.getByRole('group', { name: 'Sexe et mixité' })).getByLabelText('Filles'),
+    );
+    expect(window.location.hash).toBe('#/?q=l%C3%A9&f.gender=f&s=length&d=desc');
+    expect(push).toHaveBeenCalledTimes(2);
+
+    fireEvent.click(drawer.getByRole('button', { name: 'Réinitialiser' }));
+    expect(window.location.hash).toBe('#/?s=length&d=desc');
+    push.mockRestore();
+    replace.mockRestore();
+  });
+
+  it('le retour arrière restaure la vue précédente', async () => {
+    await renderApp();
+    fireEvent.change(screen.getByLabelText('Trier par'), { target: { value: 'alphabetical' } });
+    await waitFor(() => expect(names()).toEqual(['Léa', 'Jean-Baptiste', 'Camille']));
+    // Simule le bouton « Précédent » du navigateur.
+    await act(async () => {
+      window.history.replaceState(null, '', '#/');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    await waitFor(() => expect(names()).toEqual(['Camille', 'Léa', 'Jean-Baptiste']));
+    expect(screen.getByLabelText('Trier par')).toHaveValue('totalPopularity');
+  });
+
+  it('la fiche renvoie vers la liste avec la vue en cours', async () => {
+    await renderApp();
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'ca' } });
+    await go('#/prenom/camille');
+    const back = screen.getByRole('link', { name: '← Tous les prénoms' });
+    expect(back).toHaveAttribute('href', '#/?q=ca');
+    await go('#/?q=ca');
+    await waitFor(() => expect(names()).toEqual(['Camille']));
+    expect(screen.getByRole('searchbox')).toHaveValue('ca');
+  });
+});
+
+describe('favoris et export', () => {
+  it('les favoris sont conservés et alimentent le filtre « Favoris uniquement »', async () => {
+    await renderApp();
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter Léa aux favoris' }));
+    expect(JSON.parse(localStorage.getItem(FAVORITES_KEY)!)).toEqual(['lea']);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Filtres' }));
+    const drawer = within(screen.getByRole('dialog'));
+    fireEvent.click(
+      within(drawer.getByRole('group', { name: 'Favoris' })).getByLabelText('Favoris uniquement'),
+    );
+    fireEvent.click(drawer.getByRole('button', { name: 'Voir 1 prénom' }));
+    await waitFor(() => expect(names()).toEqual(['Léa']));
+    expect(window.location.hash).toBe('#/?f.favorites=only');
+
+    // Retirer le favori le fait sortir de la liste filtrée.
+    fireEvent.click(screen.getByRole('button', { name: 'Retirer Léa des favoris' }));
+    expect(
+      await screen.findByRole('heading', { name: 'Aucun prénom ne correspond' }),
+    ).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem(FAVORITES_KEY)!)).toEqual([]);
+  });
+
+  it('exporte la liste filtrée et triée en CSV et en JSON', async () => {
+    const blobs: Blob[] = [];
+    vi.stubGlobal('URL', {
+      ...URL,
+      createObjectURL: (blob: Blob) => (blobs.push(blob), 'blob:test'),
+      revokeObjectURL: vi.fn(),
+    });
+    const clicked: string[] = [];
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (
+      this: HTMLAnchorElement,
+    ) {
+      clicked.push(this.download);
+    });
+
+    await renderApp();
+    fireEvent.change(screen.getByLabelText('Trier par'), { target: { value: 'alphabetical' } });
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'l' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Exporter' }));
+    fireEvent.click(
+      within(screen.getByRole('group', { name: 'Format d’export' })).getByRole('button', {
+        name: /CSV/,
+      }),
+    );
+
+    expect(clicked[0]).toMatch(/^prenoms-\d{4}-\d{2}-\d{2}\.csv$/);
+    expect(blobs[0]!.type).toBe('text/csv;charset=utf-8');
+    const csv = await blobs[0]!.text();
+    const lines = csv.split('\r\n');
+    expect(lines[0]).toContain('id;prenom;derived.');
+    expect(lines[0]).toContain('insee.total');
+    expect(lines[1]).toMatch(/^lea;Léa;/);
+    expect(lines).toHaveLength(3);
+    expect(await screen.findByText('1 prénom exporté en CSV')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Exporter' }));
+    fireEvent.click(screen.getByRole('button', { name: /JSON/ }));
+    expect(clicked[1]).toMatch(/\.json$/);
+    const json = JSON.parse(await blobs[1]!.text()) as {
+      id: string;
+      facts: { insee: { byYear: unknown } };
+    }[];
+    expect(json.map((item) => item.id)).toEqual(['lea']);
+    expect(json[0]!.facts.insee.byYear).toBeDefined();
+    click.mockRestore();
   });
 });
 

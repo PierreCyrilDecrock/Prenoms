@@ -7,6 +7,7 @@ import { useResults } from '@/state/useResults';
 import { MotionSettings } from '@/ui/MotionSettings';
 import { DESKTOP_QUERY, useMediaQuery } from '@/ui/useMediaQuery';
 import { ActiveChips } from './ActiveChips';
+import { ExportMenu } from './ExportMenu';
 import { FilterDrawer } from './FilterDrawer';
 import { FilterPanel } from './FilterPanel';
 import { Header } from './Header';
@@ -72,8 +73,9 @@ export function ExplorerPage() {
 
         <main className="min-w-0">
           <div ref={aboveRef}>
-            <div className="flex justify-end px-4 pt-2">
+            <div className="flex items-center justify-end gap-2 px-4 pt-2">
               <SortControls />
+              <ExportMenu results={ready ? results : []} />
             </div>
             <ActiveChips active={active} canReset={isFiltered} />
           </div>
