@@ -12,7 +12,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | 6   | Filtres de la v1                        | terminée | 2026-11-13 | `9f4a648` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 7   | Tris de la v1                           | terminée | 2026-11-13 | `b4e595a` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 8   | Interface : structure et lisibilité     | terminée | 2026-11-13 | `7e3956d` | https://pierrecyrildecrock.github.io/Prenoms/      |
-| 9   | Animations et interactions              | à faire  |            |           |                                                    |
+| 9   | Animations et interactions              | terminée | 2026-11-13 | `98fa48d` | https://pierrecyrildecrock.github.io/Prenoms/      |
 | 10  | État dans l'URL, favoris, export        | à faire  |            |           |                                                    |
 | 11  | Tests, performance, accessibilité       | à faire  |            |           |                                                    |
 | 12  | Finitions de publication                | à faire  |            |           |                                                    |
@@ -148,3 +148,38 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 - Non fait à cette étape, prévu plus tard : animations (étape 9), état dans l'URL et favoris
   (étape 10), audit axe et Lighthouse (étape 11).
 - Compteur temporaire de l'étape 4 retiré de l'accueil.
+
+### Étape 9 – 2026-11-13
+
+- Commit `98fa48d`, workflow vert. Vérifié sur l'URL publiée avec un navigateur automatisé à
+  360 px : `version.json` renvoie ce SHA ; les lignes conservées glissent, les nouvelles entrent
+  en fondu, le compteur passe par des valeurs intermédiaires, la pastille sort avec un effet
+  d'échelle, le tiroir suit le pointeur et se ferme en glissant, le défilement est conservé au
+  changement de tri et retrouvé au retour d'une fiche, la copie affiche une notification. Avec
+  « Réduire les animations » ou le réglage du système, plus aucune ligne ni le tiroir ne bouge.
+- Fluidité mesurée sur l'URL publiée (navigateur de test sans carte graphique) :
+
+  | Scénario                               | Processeur normal | Processeur ralenti 4 fois |
+  | -------------------------------------- | ----------------- | ------------------------- |
+  | Frappe rapide (« marie », puis efface) | 59 images/s       | 24 images/s               |
+  | Changements de tri, liste complète     | 58 images/s       | 31 images/s               |
+
+  À processeur ralenti, le rythme est le même avec les animations réduites (26 et 31) : ce ne
+  sont pas les animations qui coûtent, mais le calcul et le dessin des lignes. Non mesuré sur un
+  vrai téléphone.
+
+- Simplifications faites après profilage, conformément à la règle de l'étape :
+  - animations de disposition de Motion (`layout`) retirées des pastilles et du bloc de liste :
+    elles forçaient un recalcul de mise en page à chaque frappe ;
+  - position de la liste mesurée seulement quand ce qui la précède change de hauteur ;
+  - tri de la liste complète fait une fois par tri, plus à chaque frappe ;
+  - formatage des nombres avec des `Intl.NumberFormat` réutilisés.
+- Choix et écarts :
+  - favoris en mémoire seulement à cette étape (perdus au rechargement) ; la conservation et le
+    filtre « Favoris » sont à l'étape 10 ;
+  - « si plus de 200 lignes changent, désactive » : la liste étant virtualisée, seules une
+    trentaine de lignes existent ; le seuil porte donc sur le nombre de lignes affichées ;
+  - les pastilles voisines se replacent sans glisser quand l'une disparaît ;
+  - les courbes « se tracent » par un dévoilement en `transform`, pas par `stroke-dashoffset` ;
+  - bouton « Copier le prénom » placé sur la fiche.
+- `src/core` non modifié à cette étape.
