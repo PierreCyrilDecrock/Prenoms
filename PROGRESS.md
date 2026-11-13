@@ -9,7 +9,7 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
 | 3   | Pipeline de données INSEE               | terminée | 2026-11-12 | `18153cf` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 4   | Source INSEE dans le navigateur         | terminée | 2026-11-13 | `33f23a6` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 5   | Moteur de requête                       | terminée | 2026-11-13 | `5de104e` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
-| 6   | Filtres de la v1                        | à faire  |            |           |                                                    |
+| 6   | Filtres de la v1                        | terminée | 2026-11-13 | `9f4a648` | https://pierrecyrildecrock.github.io/Prenoms/#/dev |
 | 7   | Tris de la v1                           | à faire  |            |           |                                                    |
 | 8   | Interface : structure et lisibilité     | à faire  |            |           |                                                    |
 | 9   | Animations et interactions              | à faire  |            |           |                                                    |
@@ -86,3 +86,21 @@ URL publiée : https://pierrecyrildecrock.github.io/Prenoms/
   `context`, ce qui le garde pur et testable avec des modules factices ; sans tri, l'ordre
   d'entrée est conservé ; le départage alphabétique reste croissant même en tri décroissant.
 - Aucun filtre ni tri réel créé à cette étape.
+
+### Étape 6 – 2026-11-13
+
+- Commit `9f4a648`, workflow vert. Vérifié sur l'URL publiée avec un navigateur automatisé :
+  `version.json` renvoie ce SHA ; les 11 filtres s'affichent dans leurs 4 groupes ; chaque
+  contrôle met à jour le compteur ; les combinaisons réduisent le résultat (par exemple filles
+  16 834 → en hausse 6 054 → 5 000 naissances au moins 207 → pic dans les années 2020 : 72).
+- Choix :
+  - `gender` est un choix unique (filles, garçons, mixtes), avec le seuil de 20 % de `isMixed` ;
+  - `trend` compare `facts.insee.recent` et `facts.insee.previous`, deux champs ajoutés aux
+    faits INSEE et précalculés au chargement ; un prénom à égalité n'est ni en hausse ni en baisse ;
+  - `periodPopularity` n'est actif que si le minimum est renseigné ; une borne d'année vide vaut
+    le début ou la fin des données ;
+  - `textSearch` existe comme filtre en plus de la recherche du pipeline (`query.search`).
+- Code partagé hors de `src/filters/` (tout `.tsx` de ce dossier est pris pour un filtre) :
+  `src/ui/controls.tsx` et `src/state/urlParams.ts`.
+- Filtre factice `example` retiré ; reste le tri factice jusqu'à l'étape 7.
+- `src/core` non modifié à cette étape.
