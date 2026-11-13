@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { AnimatePresence } from 'motion/react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNamesStore } from '@/state/namesStore';
 import { useQueryStore } from '@/state/queryStore';
+import { haptic } from '@/state/settingsStore';
 import { useResults } from '@/state/useResults';
+import { MotionSettings } from '@/ui/MotionSettings';
 import { DESKTOP_QUERY, useMediaQuery } from '@/ui/useMediaQuery';
 import { ActiveChips } from './ActiveChips';
 import { FilterDrawer } from './FilterDrawer';
@@ -27,6 +30,7 @@ export function ExplorerPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
   const ready = status === 'ready';
+  const aboveRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     document.title = 'Explorateur de prénoms';
@@ -46,7 +50,14 @@ export function ExplorerPage() {
       <Header
         count={ready ? results.length : null}
         activeFilterCount={active.length}
-        onOpenFilters={isDesktop ? undefined : () => setDrawerOpen(true)}
+        onOpenFilters={
+          isDesktop
+            ? undefined
+            : () => {
+                setDrawerOpen(true);
+                haptic();
+              }
+        }
       />
 
       <div className="mx-auto w-full max-w-7xl flex-1 lg:grid lg:grid-cols-[20rem_minmax(0,1fr)]">
@@ -60,36 +71,44 @@ export function ExplorerPage() {
         )}
 
         <main className="min-w-0">
-          <div className="flex justify-end px-4 pt-2">
-            <SortControls />
+          <div ref={aboveRef}>
+            <div className="flex justify-end px-4 pt-2">
+              <SortControls />
+            </div>
+            <ActiveChips active={active} canReset={isFiltered} />
           </div>
-          <ActiveChips active={active} canReset={isFiltered} />
           <div className="mt-2 border-t border-line">
             {(status === 'loading' || status === 'idle') && <LoadingState />}
             {status === 'error' && <ErrorState message={error} onRetry={() => void load()} />}
             {ready && results.length === 0 && <EmptyState onReset={resetAll} />}
             {ready && results.length > 0 && (
-              <ResultList results={results} search={search} mode={mode} />
+              <ResultList results={results} search={search} mode={mode} aboveRef={aboveRef} />
             )}
           </div>
         </main>
       </div>
 
-      <footer className="border-t border-line px-4 py-4 text-center text-sm text-ink-muted">
-        Données : INSEE, fichier des prénoms ·{' '}
-        <a href="#/dev" className="inline-flex min-h-11 items-center underline">
-          Diagnostic
-        </a>
+      <footer className="flex flex-col items-center gap-1 border-t border-line px-4 py-4 text-center text-sm text-ink-muted">
+        <MotionSettings />
+        <p>
+          Données : INSEE, fichier des prénoms ·{' '}
+          <a href="#/dev" className="inline-flex min-h-11 items-center underline">
+            Diagnostic
+          </a>
+        </p>
       </footer>
 
-      {!isDesktop && drawerOpen && (
-        <FilterDrawer
-          resultCount={results.length}
-          canReset={isFiltered}
-          onReset={resetAll}
-          onClose={closeDrawer}
-        />
-      )}
+      <AnimatePresence>
+        {!isDesktop && drawerOpen && (
+          <FilterDrawer
+            key="drawer"
+            resultCount={results.length}
+            canReset={isFiltered}
+            onReset={resetAll}
+            onClose={closeDrawer}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

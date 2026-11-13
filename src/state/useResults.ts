@@ -22,14 +22,21 @@ export function useResults(): Results {
   const sortId = useQueryStore((state) => state.sortId);
   const direction = useQueryStore((state) => state.direction);
 
+  // Le tri de la liste complète n'est refait que si le tri change : la recherche et les
+  // filtres conservent l'ordre, donc chaque frappe ne fait que filtrer une liste déjà triée.
+  const sorted = useMemo(
+    () => runQuery(entries, { sortId, direction }, { filters, sorts, loadedSources }),
+    [entries, loadedSources, sortId, direction],
+  );
+
   return useMemo(() => {
-    const query = { search: { text: search, mode }, filters: filterParams, sortId, direction };
+    const query = { search: { text: search, mode }, filters: filterParams };
     const context = { filters, sorts, loadedSources };
     const active = activeFilters(query, context);
     return {
-      results: runQuery(entries, query, context),
+      results: runQuery(sorted, query, context),
       active,
       isFiltered: active.length > 0 || search.trim() !== '',
     };
-  }, [entries, loadedSources, search, mode, filterParams, sortId, direction]);
+  }, [sorted, loadedSources, search, mode, filterParams]);
 }

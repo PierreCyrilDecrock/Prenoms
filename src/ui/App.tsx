@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useNamesStore } from '@/state/namesStore';
 import { DevPage } from '@/ui/DevPage';
+import { MotionRoot } from '@/ui/motion';
+import { Toaster } from '@/ui/Toaster';
 import { ExplorerPage } from '@/ui/explorer/ExplorerPage';
 import { NamePage } from '@/ui/NamePage';
 import { useHashRoute } from '@/ui/useHashRoute';
@@ -23,9 +25,16 @@ export function App() {
     void useNamesStore.getState().load();
   }, []);
 
-  if (route === '/dev') return <DevPage />;
-  if (route.startsWith(NAME_PREFIX)) {
-    return <NamePage id={safeDecode(route.slice(NAME_PREFIX.length))} />;
+  let page = <ExplorerPage />;
+  if (route === '/dev') page = <DevPage />;
+  else if (route.startsWith(NAME_PREFIX)) {
+    page = <NamePage id={safeDecode(route.slice(NAME_PREFIX.length))} />;
   }
-  return <ExplorerPage />;
+
+  return (
+    <MotionRoot>
+      {page}
+      <Toaster />
+    </MotionRoot>
+  );
 }

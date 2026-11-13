@@ -47,7 +47,7 @@ export function DevStep6() {
           type="button"
           onClick={() => setParams({})}
           disabled={activeCount === 0}
-          className="min-h-11 rounded-card border border-line px-4 font-medium transition-transform duration-fast ease-soft active:scale-[0.98] disabled:opacity-50"
+          className="min-h-11 rounded-card border border-line px-4 font-medium pressable disabled:opacity-50"
         >
           Tout réinitialiser
         </button>

@@ -64,7 +64,7 @@ export function NumberField(props: {
 }
 
 const chipClass =
-  'inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-card border border-line px-3 transition-transform duration-fast ease-soft active:scale-[0.98]';
+  'inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-card border border-line px-3 pressable';
 
 /** Choix unique parmi quelques options (boutons radio). */
 export function ChoiceGroup<T extends string>(props: {

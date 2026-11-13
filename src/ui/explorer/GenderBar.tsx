@@ -16,8 +16,16 @@ export function genderShortLabel(femaleShare: number): string {
     : `${formatPercent(1 - femaleShare)} garçons`;
 }
 
+interface Props {
+  femaleShare: number;
+  /** Version large de la fiche : barre pleine largeur et libellé complet. */
+  wide?: boolean;
+  /** La barre grandit depuis la gauche à l'apparition. */
+  animateIn?: boolean;
+}
+
 /** Barre bicolore filles/garçons, accompagnée de son libellé. */
-export function GenderBar({ femaleShare, wide }: { femaleShare: number; wide?: boolean }) {
+export function GenderBar({ femaleShare, wide, animateIn }: Props) {
   return (
     <span className={`flex min-w-0 gap-2 ${wide ? 'flex-col' : 'items-center'}`}>
       <span
@@ -25,7 +33,9 @@ export function GenderBar({ femaleShare, wide }: { femaleShare: number; wide?: b
         className={`relative block h-2 shrink-0 overflow-hidden rounded-full bg-male ${wide ? 'h-3 w-full' : 'w-12'}`}
       >
         <span
-          className="absolute inset-y-0 left-0 w-full origin-left bg-female"
+          className={`absolute inset-y-0 left-0 w-full origin-left bg-female transition-transform duration-slow ease-soft ${
+            animateIn ? 'animate-grow-x' : ''
+          }`}
           style={{ transform: `scaleX(${femaleShare})` }}
         />
       </span>

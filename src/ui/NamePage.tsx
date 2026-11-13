@@ -1,7 +1,13 @@
 import { useEffect, useMemo, type ReactNode } from 'react';
 import { useNamesStore } from '@/state/namesStore';
+import { NAME_TRANSITION, useNavStore } from '@/state/navStore';
+import { haptic } from '@/state/settingsStore';
+import { useToastStore } from '@/state/toastStore';
+import { FavoriteButton } from '@/ui/FavoriteButton';
+import { copyText } from '@/ui/clipboard';
+import { PageTransition } from '@/ui/motion';
 import { GenderBar } from '@/ui/explorer/GenderBar';
-import { ErrorState, LoadingState, primaryButtonClass } from '@/ui/explorer/States';
+import { buttonClass, ErrorState, LoadingState, primaryButtonClass } from '@/ui/explorer/States';
 import { YearChart } from '@/ui/explorer/YearChart';
 import { formatInt } from '@/ui/format';
 import { getNameStats } from '@/ui/inseeView';
@@ -17,14 +23,16 @@ function Stat({ label, children }: { label: string; children: ReactNode }) {
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-4 py-4">
-      <nav aria-label="Navigation">
-        <a href="#/" className="inline-flex min-h-11 items-center text-accent underline">
-          ← Tous les prénoms
-        </a>
-      </nav>
-      {children}
-    </div>
+    <PageTransition>
+      <div className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-4 py-4">
+        <nav aria-label="Navigation">
+          <a href="#/" className="inline-flex min-h-11 items-center text-accent underline">
+            ← Tous les prénoms
+          </a>
+        </nav>
+        {children}
+      </div>
+    </PageTransition>
   );
 }
 
@@ -37,9 +45,19 @@ export function NamePage({ id }: { id: string }) {
   const stats = useMemo(() => (entry ? getNameStats(entry) : undefined), [entry]);
   const bySex = useMemo(() => stats?.yearlyBySex(), [stats]);
 
+  const showToast = useToastStore((state) => state.show);
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Au retour, la ligne de ce prénom reprend la place du titre.
+    useNavStore.getState().setLastOpened(id);
   }, [id]);
+
+  const copyName = async (label: string) => {
+    const copied = await copyText(label);
+    showToast(copied ? `« ${label} » copié` : 'Copie impossible dans ce navigateur');
+    if (copied) haptic();
+  };
 
   useEffect(() => {
     document.title = entry ? `${entry.label} – Explorateur de prénoms` : 'Explorateur de prénoms';
@@ -80,13 +98,23 @@ export function NamePage({ id }: { id: string }) {
       <main className="flex flex-col gap-6">
         <header className="flex flex-col gap-2">
           <h1 className="text-4xl font-semibold tracking-tight break-words sm:text-5xl">
-            {entry.label}
+            <span style={{ viewTransitionName: NAME_TRANSITION }}>{entry.label}</span>
           </h1>
           {stats && (
             <p className="text-lg text-ink-muted">
               {formatInt(stats.total)} naissances de {stats.firstYear} à {stats.lastYear}
             </p>
           )}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => void copyName(entry.label)}
+              className={buttonClass}
+            >
+              Copier le prénom
+            </button>
+            <FavoriteButton id={entry.id} label={entry.label} />
+          </div>
         </header>
 
         {!stats && <p className="text-ink-muted">Aucune statistique pour ce prénom.</p>}

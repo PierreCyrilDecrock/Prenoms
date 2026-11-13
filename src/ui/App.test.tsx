@@ -232,4 +232,15 @@ describe('App', () => {
       '#/prenom/jean-baptiste',
     );
   });
+
+  it('étape 9 : réglages de mouvement et notification d’exemple', async () => {
+    window.location.hash = '#/dev';
+    render(<App />);
+    expect(screen.getByTestId('motion-Animations')).toHaveTextContent('complètes');
+    fireEvent.click(screen.getByLabelText('Réduire les animations'));
+    expect(screen.getByTestId('motion-Animations')).toHaveTextContent('réduites');
+    fireEvent.click(screen.getByLabelText('Réduire les animations'));
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher une notification' }));
+    expect(await screen.findByText('Exemple de notification')).toBeInTheDocument();
+  });
 });

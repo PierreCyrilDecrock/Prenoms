@@ -7,6 +7,7 @@ import { DevStep5 } from '@/ui/DevStep5';
 import { DevStep6 } from '@/ui/DevStep6';
 import { DevStep7 } from '@/ui/DevStep7';
 import { DevStep8 } from '@/ui/DevStep8';
+import { DevStep9 } from '@/ui/DevStep9';
 import { colorTokens } from '@/ui/tokens';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -159,6 +160,10 @@ export function DevPage() {
 
       <Section title="Étape 8 – Interface : structure et lisibilité">
         <DevStep8 />
+      </Section>
+
+      <Section title="Étape 9 – Animations et interactions">
+        <DevStep9 />
       </Section>
     </main>
   );

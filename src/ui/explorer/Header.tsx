@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { SearchMode } from '@/core';
 import { useQueryStore } from '@/state/queryStore';
 import { plural } from '@/ui/format';
+import { AnimatedNumber } from '@/ui/motion';
 import { buttonClass } from './States';
 
 const modes: { id: SearchMode; label: string }[] = [
@@ -75,11 +76,18 @@ export function Header({ count, activeFilterCount, onOpenFilters }: Props) {
             aria-keyshortcuts="/"
             className="min-h-12 w-full rounded-card border border-line bg-surface-raised pr-32 pl-4 text-lg placeholder:text-ink-muted"
           />
+          {/* Le nombre animé est décoratif ; le texte exact est annoncé à côté. */}
           <p
-            role="status"
-            data-testid="result-count"
-            className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-sm text-ink-muted"
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-4 flex items-center gap-1 text-sm text-ink-muted"
           >
+            {count !== null && (
+              <>
+                <AnimatedNumber value={count} /> {count > 1 ? 'prénoms' : 'prénom'}
+              </>
+            )}
+          </p>
+          <p role="status" data-testid="result-count" className="sr-only">
             {count === null ? '' : plural(count, 'prénom')}
           </p>
         </div>

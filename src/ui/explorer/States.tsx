@@ -2,10 +2,10 @@ import type { ReactNode } from 'react';
 import { ROW_HEIGHT } from './ResultRow';
 
 export const buttonClass =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-card border border-line bg-surface-raised px-4 font-medium transition-transform duration-fast ease-soft active:scale-[0.98] disabled:opacity-50';
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-card border border-line bg-surface-raised px-4 font-medium pressable disabled:opacity-50';
 
 export const primaryButtonClass =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-card bg-accent px-4 font-medium text-accent-ink transition-transform duration-fast ease-soft active:scale-[0.98]';
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-card bg-accent px-4 font-medium text-accent-ink pressable';
 
 /** Squelettes affichés pendant le chargement des prénoms. */
 export function LoadingState() {

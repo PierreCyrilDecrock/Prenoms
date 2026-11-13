@@ -105,3 +105,89 @@
     outline-offset: 2px;
   }
 }
+
+/*
+ * Mouvement. Seuls transform et opacity sont animés.
+ */
+
+/* Retour visuel des éléments cliquables : élévation légère au survol, réduction à 98 % à l'appui. */
+@utility pressable {
+  transition: transform var(--duration-fast) var(--ease-soft);
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+/* Barre qui grandit depuis la gauche à l'apparition (jusqu'à sa propre échelle). */
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+@utility animate-grow-x {
+  animation: grow-x var(--duration-slow) var(--ease-soft) backwards;
+}
+
+/*
+ * Courbe qui se trace de gauche à droite, sans animer autre chose que transform :
+ * le conteneur glisse vers la droite pendant que son contenu glisse en sens inverse.
+ */
+@keyframes reveal-outer {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes reveal-inner {
+  from {
+    transform: translateX(100%);
+  }
+}
+@utility reveal {
+  overflow: hidden;
+  & > * {
+    animation: reveal-outer var(--reveal-duration, var(--duration-slow)) var(--ease-in-out-soft)
+      backwards;
+  }
+  & > * > * {
+    animation: reveal-inner var(--reveal-duration, var(--duration-slow)) var(--ease-in-out-soft)
+      backwards;
+  }
+}
+
+/* Transition entre la liste et la fiche (API View Transitions). */
+::view-transition-group(*) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-soft);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-slow);
+}
+
+/*
+ * Animations réduites : réglage du système ou réglage « Réduire les animations » de l'interface.
+ * Les mouvements CSS sont supprimés ; Motion ne garde que des fondus (voir MotionConfig).
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+html[data-reduce-motion='true'] {
+  & *,
+  & ::before,
+  & ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

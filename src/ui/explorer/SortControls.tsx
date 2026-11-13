@@ -1,6 +1,7 @@
 import { sorts } from '@/core';
 import { useNamesStore } from '@/state/namesStore';
 import { useQueryStore } from '@/state/queryStore';
+import { haptic } from '@/state/settingsStore';
 import { buttonClass } from './States';
 
 /** Sélecteur de tri et de sens, alimenté par le registre. */
@@ -37,7 +38,10 @@ export function SortControls() {
       </select>
       <button
         type="button"
-        onClick={() => setDirection(descending ? 'asc' : 'desc')}
+        onClick={() => {
+          setDirection(descending ? 'asc' : 'desc');
+          haptic();
+        }}
         aria-label={`Sens du tri : ${descending ? 'décroissant' : 'croissant'}. Inverser`}
         className={buttonClass}
       >

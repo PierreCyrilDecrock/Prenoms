@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { formatInt } from '@/ui/format';
 
 interface Props {
@@ -62,61 +62,68 @@ export function YearChart({ startYear, female, male, label }: Props) {
 
   return (
     <figure className="flex flex-col gap-2">
-      <div ref={containerRef}>
-        <svg role="img" aria-label={label} width={width} height={HEIGHT} className="block">
-          {valueTicks.map((tick) => (
-            <g key={tick}>
-              <line
-                x1={PAD.left}
-                x2={width - PAD.right}
-                y1={y(tick)}
-                y2={y(tick)}
-                stroke="var(--line)"
-              />
+      {/* La courbe se trace de gauche à droite à l'ouverture de la fiche. */}
+      <div
+        ref={containerRef}
+        className="reveal"
+        style={{ '--reveal-duration': 'var(--duration-page)' } as CSSProperties}
+      >
+        <div>
+          <svg role="img" aria-label={label} width={width} height={HEIGHT} className="block">
+            {valueTicks.map((tick) => (
+              <g key={tick}>
+                <line
+                  x1={PAD.left}
+                  x2={width - PAD.right}
+                  y1={y(tick)}
+                  y2={y(tick)}
+                  stroke="var(--line)"
+                />
+                <text
+                  x={PAD.left - 8}
+                  y={y(tick)}
+                  textAnchor="end"
+                  dominantBaseline="middle"
+                  fontSize="12"
+                  fill="var(--ink-muted)"
+                >
+                  {formatInt(tick)}
+                </text>
+              </g>
+            ))}
+            {yearTicks.map((year) => (
               <text
-                x={PAD.left - 8}
-                y={y(tick)}
-                textAnchor="end"
-                dominantBaseline="middle"
+                key={year}
+                x={x(year - startYear)}
+                y={HEIGHT - 8}
+                textAnchor="middle"
                 fontSize="12"
                 fill="var(--ink-muted)"
               >
-                {formatInt(tick)}
+                {year}
               </text>
-            </g>
-          ))}
-          {yearTicks.map((year) => (
-            <text
-              key={year}
-              x={x(year - startYear)}
-              y={HEIGHT - 8}
-              textAnchor="middle"
-              fontSize="12"
-              fill="var(--ink-muted)"
-            >
-              {year}
-            </text>
-          ))}
-          {hasMale && (
-            <path
-              d={path(male)}
-              fill="none"
-              stroke="var(--male)"
-              strokeWidth="2"
-              strokeDasharray="6 4"
-              strokeLinejoin="round"
-            />
-          )}
-          {hasFemale && (
-            <path
-              d={path(female)}
-              fill="none"
-              stroke="var(--female)"
-              strokeWidth="2"
-              strokeLinejoin="round"
-            />
-          )}
-        </svg>
+            ))}
+            {hasMale && (
+              <path
+                d={path(male)}
+                fill="none"
+                stroke="var(--male)"
+                strokeWidth="2"
+                strokeDasharray="6 4"
+                strokeLinejoin="round"
+              />
+            )}
+            {hasFemale && (
+              <path
+                d={path(female)}
+                fill="none"
+                stroke="var(--female)"
+                strokeWidth="2"
+                strokeLinejoin="round"
+              />
+            )}
+          </svg>
+        </div>
       </div>
       <figcaption className="flex flex-wrap gap-4 text-sm text-ink-muted">
         <span className="inline-flex items-center gap-2">

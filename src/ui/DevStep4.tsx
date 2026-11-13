@@ -82,7 +82,7 @@ export function DevStep4() {
           type="button"
           onClick={() => void load()}
           disabled={busy}
-          className="min-h-11 rounded-card border border-line px-4 font-medium transition-transform duration-fast ease-soft active:scale-[0.98] disabled:opacity-50"
+          className="min-h-11 rounded-card border border-line px-4 font-medium pressable disabled:opacity-50"
         >
           Recharger
         </button>
@@ -90,7 +90,7 @@ export function DevStep4() {
           type="button"
           onClick={() => void clearCachesAndReload()}
           disabled={busy}
-          className="min-h-11 rounded-card border border-line px-4 font-medium transition-transform duration-fast ease-soft active:scale-[0.98] disabled:opacity-50"
+          className="min-h-11 rounded-card border border-line px-4 font-medium pressable disabled:opacity-50"
         >
           Vider le cache et recharger
         </button>

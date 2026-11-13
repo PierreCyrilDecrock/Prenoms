@@ -16,23 +16,35 @@ export function sparklinePath(values: readonly number[], width = WIDTH, height =
     .join('');
 }
 
+interface Props {
+  values: readonly number[];
+  /** La courbe se trace de gauche à droite à l'apparition. */
+  animateIn?: boolean;
+}
+
 /** Mini-courbe d'évolution annuelle (décorative : le total est donné en texte à côté). */
-export const Sparkline = memo(function Sparkline({ values }: { values: readonly number[] }) {
+export const Sparkline = memo(function Sparkline({ values, animateIn }: Props) {
   return (
-    <svg
+    <span
       aria-hidden="true"
-      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-      preserveAspectRatio="none"
-      className="h-7 w-18 shrink-0 text-accent sm:w-28"
+      className={`block h-7 w-14 shrink-0 sm:w-28 ${animateIn ? 'reveal' : ''}`}
     >
-      <path
-        d={sparklinePath(values)}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
+      <span className="block size-full">
+        <svg
+          viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+          preserveAspectRatio="none"
+          className="block size-full text-accent"
+        >
+          <path
+            d={sparklinePath(values)}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      </span>
+    </span>
   );
 });

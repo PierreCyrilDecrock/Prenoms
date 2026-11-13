@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { sampleData } from '@/sources/insee/facts.test';
 import { initialQuery, useQueryStore } from '@/state/queryStore';
 import { App } from '@/ui/App';
@@ -51,7 +51,7 @@ afterEach(() => {
 describe('page principale', () => {
   it('affiche les prénoms triés par popularité, avec total, répartition et lien vers la fiche', async () => {
     await renderApp();
-    expect(names()).toEqual(['Camille', 'Léa', 'Jean-Baptiste']);
+    await waitFor(() => expect(names()).toEqual(['Camille', 'Léa', 'Jean-Baptiste']));
     expect(screen.getByTestId('result-count')).toHaveTextContent('3 prénoms');
 
     const camille = screen.getByRole('link', { name: /Camille/ });
@@ -67,13 +67,13 @@ describe('page principale', () => {
     await renderApp();
     const input = screen.getByRole('searchbox', { name: 'Rechercher un prénom' });
     fireEvent.change(input, { target: { value: 'LE' } });
-    expect(names()).toEqual(['Léa']);
+    await waitFor(() => expect(names()).toEqual(['Léa']));
     expect(screen.getByTestId('result-count')).toHaveTextContent('1 prénom');
     expect(screen.getByRole('link', { name: /Léa/ }).querySelector('mark')).toHaveTextContent('Lé');
 
     fireEvent.change(screen.getByLabelText('Mode de recherche'), { target: { value: 'contains' } });
     fireEvent.change(input, { target: { value: 'a' } });
-    expect(names()).toEqual(['Camille', 'Léa', 'Jean-Baptiste']);
+    await waitFor(() => expect(names()).toEqual(['Camille', 'Léa', 'Jean-Baptiste']));
   });
 
   it('raccourcis : « / » place le curseur dans la recherche, « Échap » l’efface', async () => {
@@ -85,7 +85,7 @@ describe('page principale', () => {
     fireEvent.change(input, { target: { value: 'lea' } });
     fireEvent.keyDown(input, { key: 'Escape' });
     expect(input).toHaveValue('');
-    expect(names()).toHaveLength(3);
+    await waitFor(() => expect(names()).toHaveLength(3));
   });
 
   it('change de tri et de sens depuis le registre', async () => {
@@ -93,15 +93,15 @@ describe('page principale', () => {
     const select = screen.getByLabelText('Trier par');
     expect(select).toHaveValue('totalPopularity');
     fireEvent.change(select, { target: { value: 'alphabetical' } });
-    expect(names()).toEqual(['Léa', 'Jean-Baptiste', 'Camille']);
+    await waitFor(() => expect(names()).toEqual(['Léa', 'Jean-Baptiste', 'Camille']));
     fireEvent.click(screen.getByRole('button', { name: /Sens du tri : décroissant/ }));
-    expect(names()).toEqual(['Camille', 'Jean-Baptiste', 'Léa']);
+    await waitFor(() => expect(names()).toEqual(['Camille', 'Jean-Baptiste', 'Léa']));
     expect(screen.getByRole('button', { name: /Sens du tri : croissant/ })).toBeInTheDocument();
   });
 
   it('tiroir de filtres : ouverture, filtre, pastille, fermeture', async () => {
     await renderApp();
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     const open = screen.getByRole('button', { name: 'Filtres' });
     fireEvent.click(open);
 
@@ -122,8 +122,8 @@ describe('page principale', () => {
     );
     fireEvent.click(drawer.getByRole('button', { name: 'Voir 1 prénom' }));
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(names()).toEqual(['Léa']);
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    await waitFor(() => expect(names()).toEqual(['Léa']));
     expect(screen.getByRole('button', { name: /Filtres/ })).toHaveTextContent('2');
     const chips = within(screen.getByRole('list', { name: 'Filtres actifs' }));
     expect(
@@ -133,11 +133,15 @@ describe('page principale', () => {
     fireEvent.click(
       chips.getByRole('button', { name: 'Retirer le filtre Prénom composé : exclus' }),
     );
-    expect(names()).toEqual(['Léa']);
+    await waitFor(() => expect(names()).toEqual(['Léa']));
     expect(screen.getByRole('button', { name: /Filtres/ })).toHaveTextContent('1');
     fireEvent.click(screen.getByRole('button', { name: 'Tout réinitialiser' }));
-    expect(names()).toHaveLength(3);
-    expect(screen.queryByRole('list', { name: 'Filtres actifs' })).not.toBeInTheDocument();
+    await waitFor(() => expect(names()).toHaveLength(3));
+    await waitFor(() =>
+      expect(
+        within(screen.getByRole('list', { name: 'Filtres actifs' })).queryAllByRole('button'),
+      ).toHaveLength(0),
+    );
   });
 
   it('le tiroir se ferme avec Échap et permet d’effacer un filtre', async () => {
@@ -150,7 +154,7 @@ describe('page principale', () => {
     fireEvent.click(drawer.getByRole('button', { name: 'Effacer le filtre Accents' }));
     expect(drawer.getByRole('button', { name: 'Voir 3 prénoms' })).toBeInTheDocument();
     fireEvent.keyDown(window, { key: 'Escape' });
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   });
 
   it('aucun résultat : suggestion et réinitialisation', async () => {
@@ -161,7 +165,7 @@ describe('page principale', () => {
     fireEvent.click(
       within(screen.getByRole('main')).getAllByRole('button', { name: 'Tout réinitialiser' })[0]!,
     );
-    expect(names()).toHaveLength(3);
+    await waitFor(() => expect(names()).toHaveLength(3));
   });
 
   it('chargement puis erreur, avec un bouton pour réessayer', async () => {
@@ -175,7 +179,7 @@ describe('page principale', () => {
     failData = false;
     fireEvent.click(within(alert).getByRole('button', { name: 'Réessayer' }));
     await screen.findByRole('list', { name: 'Résultats' });
-    expect(names()).toHaveLength(3);
+    await waitFor(() => expect(names()).toHaveLength(3));
   });
 
   it('pied de page : lien discret vers le diagnostic', async () => {
@@ -222,6 +226,65 @@ describe('fiche d’un prénom', () => {
     await renderApp('#/prenom/inconnu');
     expect(await screen.findByRole('heading', { name: 'Prénom introuvable' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Revenir à la liste' })).toHaveAttribute('href', '#/');
+  });
+});
+
+describe('animations et interactions', () => {
+  it('cœur des favoris : bascule sur la ligne et se retrouve sur la fiche', async () => {
+    await renderApp();
+    const add = screen.getByRole('button', { name: 'Ajouter Léa aux favoris' });
+    expect(add).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(add);
+    expect(screen.getByRole('button', { name: 'Retirer Léa des favoris' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await go('#/prenom/lea');
+    fireEvent.click(screen.getByRole('button', { name: 'Retirer Léa des favoris' }));
+    expect(screen.getByRole('button', { name: 'Ajouter Léa aux favoris' })).toBeInTheDocument();
+  });
+
+  it('copier un prénom affiche une notification discrète', async () => {
+    const writeText = vi.fn(async () => undefined);
+    vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText } });
+    await renderApp('#/prenom/camille');
+    fireEvent.click(await screen.findByRole('button', { name: 'Copier le prénom' }));
+    expect(writeText).toHaveBeenCalledWith('Camille');
+    expect(await screen.findByText('« Camille » copié')).toBeInTheDocument();
+  });
+
+  it('réglage « Réduire les animations » : appliqué à la page et conservé', async () => {
+    await renderApp();
+    const checkbox = screen.getByLabelText('Réduire les animations');
+    expect(checkbox).not.toBeChecked();
+    expect(document.documentElement.dataset.reduceMotion).toBe('false');
+    fireEvent.click(checkbox);
+    expect(document.documentElement.dataset.reduceMotion).toBe('true');
+    expect(JSON.parse(localStorage.getItem('prenoms:settings')!)).toMatchObject({
+      reduceMotion: true,
+    });
+    fireEvent.click(checkbox);
+    expect(document.documentElement.dataset.reduceMotion).toBe('false');
+  });
+
+  it('retour tactile : vibre sur une action principale, sauf si désactivé', async () => {
+    const vibrate = vi.fn();
+    vi.stubGlobal('navigator', { ...navigator, vibrate });
+    await renderApp();
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter Léa aux favoris' }));
+    expect(vibrate).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByLabelText('Retour tactile (vibration)'));
+    fireEvent.click(screen.getByRole('button', { name: 'Retirer Léa des favoris' }));
+    expect(vibrate).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByLabelText('Retour tactile (vibration)'));
+  });
+
+  it('la ligne ouverte et le titre de la fiche partagent le même nom de transition', async () => {
+    await renderApp();
+    fireEvent.click(screen.getByRole('link', { name: /Camille/ }));
+    await go('#/prenom/camille');
+    const title = screen.getByRole('heading', { level: 1, name: 'Camille' });
+    expect(title.querySelector('span')?.style.viewTransitionName).toBe('name-title');
   });
 });
 

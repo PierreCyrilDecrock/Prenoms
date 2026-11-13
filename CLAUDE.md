@@ -144,6 +144,25 @@ décrit l'ordre croissant ; le sens et le départage alphabétique sont gérés 
 - Répartition filles/garçons : toujours une barre bicolore ET un libellé ; sur la courbe, les
   deux sexes se distinguent par la couleur et par le tracé (plein ou pointillé).
 
+## Animations
+
+- Réglages dans `src/state/settingsStore.ts` (conservés en `localStorage`) : « Réduire les
+  animations » et « Retour tactile ». `MotionRoot` (`src/ui/motion.tsx`) applique le premier, ou
+  le réglage du système : Motion ne garde que les fondus, et `data-reduce-motion` sur `<html>`
+  coupe les mouvements CSS.
+- Liste (`ResultList.tsx`) : seules les lignes affichées existent. Une ligne conservée glisse
+  vers sa nouvelle place, une nouvelle entre en fondu, une ancienne s'efface ; le défilement ne
+  déclenche aucune animation (une ligne sait si elle apparaît à cause d'un changement de
+  résultats). Coupé au-delà de 200 lignes affichées.
+- Tracé des courbes et barres : classes CSS `reveal` et `animate-grow-x` (transform seulement).
+- Retour d'appui et de survol : classe `pressable`.
+- Liste ↔ fiche : API View Transitions dans `useHashRoute.ts`, titre partagé `name-title` ;
+  repli `PageTransition` (Motion) si le navigateur ne la gère pas.
+- Ne pas utiliser les animations de disposition de Motion (`layout`) ni lire une position
+  (`offsetTop`, `getBoundingClientRect`) à chaque rendu : les deux forcent un recalcul de mise en
+  page à chaque frappe (mesuré à l'étape 9).
+- `useResults()` trie la liste complète une fois par tri, puis filtre en conservant l'ordre.
+
 ## Jetons de design
 
 Définis en variables CSS dans `src/index.css` et exposés à Tailwind par `@theme`
