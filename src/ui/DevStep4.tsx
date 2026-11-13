@@ -106,7 +106,7 @@ export function DevStep4() {
                   {entry.label}{' '}
                   <code className="text-xs font-normal text-ink-muted">{entry.id}</code>
                 </p>
-                <pre className="mt-1 overflow-x-auto text-xs whitespace-pre-wrap text-ink-muted">
+                <pre className="mt-1 text-xs break-all whitespace-pre-wrap text-ink-muted">
                   {`derived ${JSON.stringify(compact(entry.derived))}\nfacts ${JSON.stringify(compact(entry.facts))}`}
                 </pre>
               </li>

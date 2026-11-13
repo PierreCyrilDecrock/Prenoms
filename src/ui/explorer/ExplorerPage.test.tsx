@@ -3,6 +3,7 @@ import { sampleData } from '@/sources/insee/facts.test';
 import { FAVORITES_KEY, useFavoritesStore } from '@/state/favoritesStore';
 import { initialQuery, useQueryStore } from '@/state/queryStore';
 import { App } from '@/ui/App';
+import { provisionalLabel } from '@/ui/NamePage';
 import { niceMax } from './YearChart';
 
 /*
@@ -216,9 +217,9 @@ describe('fiche d’un prénom', () => {
 
   it('s’ouvre directement par son adresse, y compris avec un identifiant encodé', async () => {
     await renderApp('#/prenom/jean-baptiste');
-    expect(
-      await screen.findByRole('heading', { level: 1, name: 'Jean-Baptiste' }),
-    ).toBeInTheDocument();
+    // Le titre s'affiche d'abord d'après l'adresse, puis les données arrivent.
+    expect(screen.getByRole('heading', { level: 1, name: 'Jean-Baptiste' })).toBeInTheDocument();
+    expect(await screen.findByText(/15 naissances de 1903 à 1905/)).toBeInTheDocument();
     await go(`#/prenom/${encodeURIComponent('léa')}`);
     expect(
       screen.getByRole('heading', { level: 1, name: 'Prénom introuvable' }),
@@ -441,6 +442,14 @@ describe('favoris et export', () => {
     expect(json.map((item) => item.id)).toEqual(['lea']);
     expect(json[0]!.facts.insee.byYear).toBeDefined();
     click.mockRestore();
+  });
+});
+
+describe('provisionalLabel', () => {
+  it('déduit un libellé d’attente de l’identifiant', () => {
+    expect(provisionalLabel('camille')).toBe('Camille');
+    expect(provisionalLabel('jean-baptiste')).toBe('Jean-Baptiste');
+    expect(provisionalLabel('marie ange')).toBe('Marie Ange');
   });
 });
 

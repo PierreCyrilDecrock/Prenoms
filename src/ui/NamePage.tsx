@@ -14,6 +14,14 @@ import { YearChart } from '@/ui/explorer/YearChart';
 import { formatInt } from '@/ui/format';
 import { getNameStats } from '@/ui/inseeView';
 
+/** Libellé d'attente déduit de l'identifiant : « jean-baptiste » donne « Jean-Baptiste ». */
+export function provisionalLabel(id: string): string {
+  return id.replace(
+    /(^|[- ])(\p{L})/gu,
+    (_match, separator: string, letter: string) => separator + letter.toLocaleUpperCase('fr'),
+  );
+}
+
 function Stat({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="rounded-card border border-line bg-surface-raised p-4">
@@ -68,9 +76,15 @@ export function NamePage({ id }: { id: string }) {
   }, [entry]);
 
   if (status === 'loading' || status === 'idle') {
+    // Le titre s'affiche tout de suite, d'après l'adresse ; les données suivent.
     return (
       <Shell>
-        <LoadingState />
+        <main className="flex flex-col gap-6">
+          <h1 className="text-4xl font-semibold tracking-tight break-words sm:text-5xl">
+            {provisionalLabel(id)}
+          </h1>
+          <LoadingState />
+        </main>
       </Shell>
     );
   }

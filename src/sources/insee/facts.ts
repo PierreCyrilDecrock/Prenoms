@@ -1,4 +1,5 @@
 import type { NameEntry, SourceRecord } from '@/core';
+import { runToEnd } from '@/core/slices';
 import type { InseeData, InseeSeries } from './format';
 
 export const INSEE_SOURCE_ID = 'insee';
@@ -72,42 +73,56 @@ const lastYearOf = (series: YearSeries) => series.start + series.counts.length -
 
 /** Transforme le fichier compact en enregistrements de source, avec les faits calculés. */
 export function toRecords(data: InseeData): SourceRecord[] {
+  return runToEnd(toRecordsSteps(data));
+}
+
+/** Même traitement que toRecords, en générateur : à exécuter avec runInSlices. */
+export function* toRecordsSteps(data: InseeData): Generator<void, SourceRecord[]> {
   const { yearMin, yearMax } = data.meta;
   yearRange.min = yearMin;
   yearRange.max = yearMax;
-  return data.names.map(([label, total, male, female, maleSeries, femaleSeries]) => {
-    const byYear = {
-      male: toYearSeries(maleSeries, yearMin),
-      female: toYearSeries(femaleSeries, yearMin),
-    };
-    const present = [byYear.male, byYear.female].filter((series) => series !== null);
-    const firstYear = Math.min(...present.map((series) => series.start));
-    const lastYear = Math.max(...present.map(lastYearOf));
+  const recentFrom = yearMax - TREND_WINDOW + 1;
+  const previousFrom = yearMax - 2 * TREND_WINDOW + 1;
+
+  // Une seule passe par prénom : ce code traite toute la source au chargement.
+  const records: SourceRecord[] = [];
+  for (const [label, total, male, female, maleSeries, femaleSeries] of data.names) {
+    const maleYears = toYearSeries(maleSeries, yearMin);
+    const femaleYears = toYearSeries(femaleSeries, yearMin);
+    const firstYear = Math.min(maleYears?.start ?? Infinity, femaleYears?.start ?? Infinity);
+    const lastYear = Math.max(
+      maleYears ? lastYearOf(maleYears) : -Infinity,
+      femaleYears ? lastYearOf(femaleYears) : -Infinity,
+    );
 
     let peakYear = firstYear;
     let peakCount = 0;
+    let recent = 0;
+    let previous = 0;
     for (let year = firstYear; year <= lastYear; year++) {
-      const count = countAt(byYear.male, year) + countAt(byYear.female, year);
+      const count = countAt(maleYears, year) + countAt(femaleYears, year);
       if (count > peakCount) {
         peakCount = count;
         peakYear = year;
       }
+      if (year >= recentFrom) recent += count;
+      else if (year >= previousFrom) previous += count;
     }
 
     const facts: InseeFacts = {
       total,
       male,
       female,
-      byYear,
+      byYear: { male: maleYears, female: femaleYears },
       firstYear,
       lastYear,
       peakYear,
       peakCount,
-      recent: 0,
-      previous: 0,
+      recent,
+      previous,
     };
-    facts.recent = birthsBetween(facts, yearMax - TREND_WINDOW + 1, yearMax);
-    facts.previous = birthsBetween(facts, yearMax - 2 * TREND_WINDOW + 1, yearMax - TREND_WINDOW);
-    return { label, facts };
-  });
+    records.push({ label, facts });
+    if (records.length % 1000 === 0) yield;
+  }
+  return records;
 }

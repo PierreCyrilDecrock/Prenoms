@@ -83,7 +83,6 @@ export function ResultList({ results, search, mode, aboveRef }: Props) {
     overscan: 5,
     scrollMargin,
     initialRect: { width: 360, height: 800 },
-    getItemKey: (index) => results[index]!.id,
   });
   const items = virtualizer.getVirtualItems();
   const animated = items.length <= MAX_ANIMATED_ROWS;
@@ -102,7 +101,7 @@ export function ResultList({ results, search, mode, aboveRef }: Props) {
           const delay = firstDisplay ? Math.min(position, STAGGER_ROWS) * STAGGER_STEP : 0;
           return (
             <motion.li
-              key={item.key}
+              key={results[item.index]!.id}
               className="absolute inset-x-0 top-0"
               style={{ height: item.size }}
               variants={rowVariants}

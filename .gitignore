@@ -1,6 +1,9 @@
 node_modules/
 dist/
 coverage/
+test-results/
+playwright-report/
+.lighthouse/
 *.local
 .DS_Store
 # Fichiers sources bruts (trop volumineux, non publiés)

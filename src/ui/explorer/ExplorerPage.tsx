@@ -48,6 +48,14 @@ export function ExplorerPage() {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      {/* Lien d'évitement : au clavier, passe directement aux résultats sans traverser les filtres. */}
+      <button
+        type="button"
+        onClick={() => document.getElementById('resultats')?.focus()}
+        className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-2 focus-visible:left-2 focus-visible:z-40 focus-visible:rounded-card focus-visible:bg-accent focus-visible:px-4 focus-visible:py-3 focus-visible:font-medium focus-visible:text-accent-ink"
+      >
+        Aller aux résultats
+      </button>
       <Header
         count={ready ? results.length : null}
         activeFilterCount={active.length}
@@ -64,14 +72,17 @@ export function ExplorerPage() {
       <div className="mx-auto w-full max-w-7xl flex-1 lg:grid lg:grid-cols-[20rem_minmax(0,1fr)]">
         {isDesktop && (
           <aside
-            aria-label="Filtres"
+            aria-labelledby="sidebar-title"
             className="sticky top-18 h-[calc(100dvh-4.5rem)] overflow-y-auto border-r border-line px-4 py-4"
           >
+            <h2 id="sidebar-title" className="mb-4 text-lg font-semibold">
+              Filtres
+            </h2>
             <FilterPanel />
           </aside>
         )}
 
-        <main className="min-w-0">
+        <main id="resultats" tabIndex={-1} className="min-w-0 focus:outline-none">
           <div ref={aboveRef}>
             <div className="flex items-center justify-end gap-2 px-4 pt-2">
               <SortControls />

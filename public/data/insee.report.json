@@ -1,7 +1,7 @@
 {
   "meta": {
     "formatVersion": 1,
-    "generatedAt": "2026-11-12T23:52:15.906Z",
+    "generatedAt": "2026-11-13T13:36:08.527Z",
     "sourceFile": "prenoms-2023-nat.csv",
     "yearMin": 1900,
     "yearMax": 2023,
@@ -31,6 +31,6 @@
   "mergedVariants": 3486,
   "size": {
     "raw": 3413416,
-    "gzip": 999522
+    "gzip": 929964
   }
 }

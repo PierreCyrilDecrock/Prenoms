@@ -82,11 +82,11 @@ describe('buildInseeData', () => {
     });
   });
 
-  it('produit une entrée compacte par prénom, triée par identifiant', () => {
+  it('produit une entrée compacte par prénom, de la plus donnée à la moins donnée', () => {
     expect(data.names).toEqual([
       ['Camille', 65, 15, 50, [0, 10, 0, 5], [1, 20, 30]],
-      ['Jean-Baptiste', 12, 12, 0, [3, 12], []],
       ['Léa', 18, 0, 18, [], [1, 10, 0, 8]],
+      ['Jean-Baptiste', 12, 12, 0, [3, 12], []],
       ["N'Golo", 3, 3, 0, [2, 3], []],
     ]);
   });
@@ -127,5 +127,13 @@ describe('validateInseeData', () => {
     const { data } = buildInseeData(csv, options);
     data.names.pop();
     expect(validateInseeData(csv, data).join('\n')).toMatch(/Somme des séries : 95/);
+  });
+
+  it('à effectif égal, départage par identifiant', () => {
+    const tie = buildInseeData(
+      'sexe;preusuel;annais;nombre\n1;ZOE;2000;5\n1;ADAM;2000;5\n1;LOU;2000;9\n',
+      options,
+    ).data;
+    expect(tie.names.map((name) => name[0])).toEqual(['Lou', 'Adam', 'Zoe']);
   });
 });

@@ -12,7 +12,10 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "build:data": "node scripts/build-data.ts",
-    "validate:data": "node scripts/validate-data.ts"
+    "validate:data": "node scripts/validate-data.ts",
+    "e2e": "playwright test",
+    "e2e:live": "E2E_BASE_URL=https://pierrecyrildecrock.github.io/Prenoms/ playwright test",
+    "lighthouse": "lighthouse https://pierrecyrildecrock.github.io/Prenoms/ --chrome-flags=\"--headless=new --no-sandbox\" --only-categories=performance,accessibility,best-practices --form-factor=mobile --output=html --output-path=.lighthouse/rapport.html"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
@@ -24,7 +27,9 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.5",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -37,6 +42,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.14.0",
     "jsdom": "^31.0.0",
+    "lighthouse": "^13.6.0",
     "prettier": "^3.10.1",
     "tailwindcss": "^4.3.5",
     "typescript": "^6.0.3",

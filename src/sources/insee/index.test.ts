@@ -13,6 +13,8 @@ vi.mock('idb-keyval', () => {
 });
 
 const json = JSON.stringify(sampleData);
+/** Entrée de cache telle que la source l'écrit : le bloc meta et le JSON en texte. */
+const cacheOf = (data: InseeData) => ({ meta: data.meta, text: JSON.stringify(data) });
 const report = { meta: sampleData.meta, size: { raw: new TextEncoder().encode(json).length } };
 
 /** Réponses du réseau simulé : null = requête en échec. */
@@ -59,11 +61,11 @@ describe('source INSEE', () => {
     expect(progress.at(-1)).toBe(1);
     expect(progress.length).toBeGreaterThan(2);
     expect([...progress].sort((a, b) => a - b)).toEqual(progress);
-    expect(set).toHaveBeenCalledWith(CACHE_KEY, sampleData);
+    expect(set).toHaveBeenCalledWith(CACHE_KEY, { meta: sampleData.meta, text: json });
   });
 
   it('utilise le cache quand la version et la date de génération sont identiques', async () => {
-    await set(CACHE_KEY, sampleData);
+    await set(CACHE_KEY, cacheOf(sampleData));
     const fetchMock = stubFetch({ report, data: json });
     const result = await insee.load();
     expect(result.meta?.fromCache).toBe(true);
@@ -73,23 +75,28 @@ describe('source INSEE', () => {
 
   it('invalide le cache quand la date de génération change', async () => {
     const stale: InseeData = { ...sampleData, meta: { ...sampleData.meta, generatedAt: '2020' } };
-    await set(CACHE_KEY, stale);
+    await set(CACHE_KEY, cacheOf(stale));
     const fetchMock = stubFetch({ report, data: json });
     const result = await insee.load();
     expect(result.meta?.fromCache).toBe(false);
     expect(dataCalls(fetchMock)).toHaveLength(1);
-    expect((await get<InseeData>(CACHE_KEY))?.meta.generatedAt).toBe(sampleData.meta.generatedAt);
+    expect((await get<{ meta: InseeData['meta'] }>(CACHE_KEY))?.meta.generatedAt).toBe(
+      sampleData.meta.generatedAt,
+    );
   });
 
   it('ignore un cache d’une autre version de format', async () => {
-    await set(CACHE_KEY, { ...sampleData, meta: { ...sampleData.meta, formatVersion: 0 } });
+    await set(
+      CACHE_KEY,
+      cacheOf({ ...sampleData, meta: { ...sampleData.meta, formatVersion: 0 } }),
+    );
     const fetchMock = stubFetch({ report, data: json });
     expect((await insee.load()).meta?.fromCache).toBe(false);
     expect(dataCalls(fetchMock)).toHaveLength(1);
   });
 
   it('utilise le cache hors ligne', async () => {
-    await set(CACHE_KEY, sampleData);
+    await set(CACHE_KEY, cacheOf(sampleData));
     stubFetch({ report: null, data: null });
     expect((await insee.load()).meta?.fromCache).toBe(true);
   });
@@ -118,8 +125,15 @@ describe('source INSEE', () => {
     await expect(insee.load()).rejects.toThrow(/version 99/);
   });
 
-  it('clearCache vide le cache', async () => {
+  it('ignore un cache à l’ancien format (objet au lieu de texte)', async () => {
     await set(CACHE_KEY, sampleData);
+    const fetchMock = stubFetch({ report, data: json });
+    expect((await insee.load()).meta?.fromCache).toBe(false);
+    expect(dataCalls(fetchMock)).toHaveLength(1);
+  });
+
+  it('clearCache vide le cache', async () => {
+    await set(CACHE_KEY, cacheOf(sampleData));
     await insee.clearCache?.();
     expect(await get(CACHE_KEY)).toBeUndefined();
   });

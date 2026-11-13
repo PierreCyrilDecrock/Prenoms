@@ -39,16 +39,19 @@ docs/        plan et guides d'extension
 
 ## Commandes
 
-| Commande                | Effet                                                |
-| ----------------------- | ---------------------------------------------------- |
-| `npm run dev`           | Serveur de développement                             |
-| `npm run build`         | Vérification des types puis build dans `dist/`       |
-| `npm run preview`       | Sert `dist/` (ajouter `--base /Prenoms/` au build)   |
-| `npm test`              | Tests Vitest + Testing Library                       |
-| `npm run lint`          | ESLint + vérification Prettier                       |
-| `npm run format`        | Formate avec Prettier                                |
-| `npm run build:data`    | Régénère `public/data/insee.json` depuis `data/raw/` |
-| `npm run validate:data` | Vérifie que les sommes du JSON égalent celles du CSV |
+| Commande                | Effet                                                         |
+| ----------------------- | ------------------------------------------------------------- |
+| `npm run dev`           | Serveur de développement                                      |
+| `npm run build`         | Vérification des types puis build dans `dist/`                |
+| `npm run preview`       | Sert `dist/` (ajouter `--base /Prenoms/` au build)            |
+| `npm test`              | Tests Vitest + Testing Library                                |
+| `npm run lint`          | ESLint + vérification Prettier                                |
+| `npm run format`        | Formate avec Prettier                                         |
+| `npm run e2e`           | Scénarios Playwright sur un build local (mobile et desktop)   |
+| `npm run e2e:live`      | Les mêmes scénarios contre le site publié                     |
+| `npm run lighthouse`    | Audit Lighthouse mobile du site publié (`CHROME_PATH` requis) |
+| `npm run build:data`    | Régénère `public/data/insee.json` depuis `data/raw/`          |
+| `npm run validate:data` | Vérifie que les sommes du JSON égalent celles du CSV          |
 
 Test local sous sous-chemin : `VITE_BASE=/Prenoms/ npm run build && VITE_BASE=/Prenoms/ npm run preview`.
 
@@ -143,6 +146,23 @@ décrit l'ordre croissant ; le sens et le départage alphabétique sont gérés 
   aux lignes et à la fiche des nombres prêts à afficher.
 - Répartition filles/garçons : toujours une barre bicolore ET un libellé ; sur la courbe, les
   deux sexes se distinguent par la couleur et par le tracé (plein ou pointillé).
+
+## Tests de bout en bout, accessibilité, performance
+
+- `e2e/*.e2e.ts` (Playwright, hors Vitest) : `parcours` (recherche, filtres, tri, fiche, lien
+  partagé, favoris, export), `accessibilite` (audit axe de chaque écran en clair et en sombre,
+  focus au clavier, lien d'évitement, annonce du nombre de résultats), `performance` (chargement,
+  réponse d'une recherche et d'un filtre sous 100 ms). Deux projets : `mobile` (Pixel 7) et
+  `desktop` (1440 px). Ils ne tournent pas dans le workflow de déploiement.
+- Dans un test, attendre la liste avec `expectTop` ou `settledTop` : une ligne sortante reste
+  120 ms dans la page pendant son fondu.
+- Chargement sans blocage : les traitements longs sont des générateurs exécutés par
+  `runInSlices` (`src/core/slices.ts`), par tranches de 8 ms ; `mergeSources` et `toRecords`
+  gardent une version directe pour les tests et les scripts.
+- Le JSON est livré trié par popularité décroissante (ordre d'affichage par défaut : pas de tri
+  au chargement) et mis en cache sous forme de texte (copier l'objet bloquerait l'interface).
+- `DevPage` est chargée à la demande (`React.lazy`).
+- Ordre des titres : `h1` application, `h2` « Filtres », `h3` groupes, `h4` filtres.
 
 ## État dans l'URL, favoris, export
 

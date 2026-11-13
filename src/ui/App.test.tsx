@@ -38,6 +38,13 @@ const report = {
   size: { raw: 3 * 1024 * 1024, gzip: 1024 * 1024 },
 };
 
+/** Ouvre la page de diagnostic (chargée à la demande) et attend son affichage. */
+async function renderDev() {
+  window.location.hash = '#/dev';
+  render(<App />);
+  await screen.findByText('Page de diagnostic');
+}
+
 describe('App', () => {
   beforeEach(() => {
     vi.stubGlobal(
@@ -55,18 +62,16 @@ describe('App', () => {
     window.location.hash = '';
   });
 
-  it('affiche la page de diagnostic sur #/dev, avec le SHA et la date de build', () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+  it('affiche la page de diagnostic sur #/dev, avec le SHA et la date de build', async () => {
+    await renderDev();
     expect(screen.getByText('Page de diagnostic')).toBeVisible();
     expect(screen.getByTestId('build-sha')).not.toBeEmptyDOMElement();
     expect(screen.getByTestId('build-date')).toHaveAttribute('dateTime');
     expect(screen.getByRole('heading', { name: /Étape 1 –/ })).toBeVisible();
   });
 
-  it('étape 2 : liste les registres et normalise un prénom en direct', () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+  it('étape 2 : liste les registres et normalise un prénom en direct', async () => {
+    await renderDev();
     expect(screen.getByTestId('registry-source')).toHaveTextContent('insee');
     expect(screen.getByTestId('registry-champ calculé')).toHaveTextContent('femaleShare');
     expect(screen.getByTestId('registry-filtre')).toHaveTextContent('textSearch');
@@ -84,12 +89,11 @@ describe('App', () => {
       window.location.hash = '#/dev';
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
-    expect(screen.getByText('Page de diagnostic')).toBeVisible();
+    expect(await screen.findByText('Page de diagnostic')).toBeVisible();
   });
 
-  it('étape 2 : liste les registres et normalise un prénom en direct', () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+  it('étape 2 : liste les registres et normalise un prénom en direct', async () => {
+    await renderDev();
     expect(screen.getByTestId('registry-source')).toHaveTextContent('insee');
     expect(screen.getByTestId('registry-champ calculé')).toHaveTextContent('femaleShare');
     expect(screen.getByTestId('registry-filtre')).toHaveTextContent('textSearch');
@@ -106,12 +110,11 @@ describe('App', () => {
       window.location.hash = '#/dev';
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
-    expect(screen.getByText('Page de diagnostic')).toBeVisible();
+    expect(await screen.findByText('Page de diagnostic')).toBeVisible();
   });
 
   it('étape 3 : affiche les statistiques du rapport INSEE', async () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+    await renderDev();
     const section = await screen.findByTestId('insee-report');
     expect(section).toHaveTextContent(/1\s?234/);
     expect(section).toHaveTextContent('1900–2023');
@@ -129,14 +132,12 @@ describe('App', () => {
       'fetch',
       vi.fn(async () => new Response('', { status: 404 })),
     );
-    window.location.hash = '#/dev';
-    render(<App />);
+    await renderDev();
     expect(await screen.findByRole('alert')).toHaveTextContent('HTTP 404');
   });
 
   it('étape 4 : charge les prénoms au démarrage et les affiche', async () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+    await renderDev();
     await screen.findByText('Échantillon de 3 prénoms');
     expect(screen.getByTestId('load-status')).toHaveTextContent('3 prénoms chargés');
     expect(screen.getByTestId('origin-insee')).toHaveTextContent('réseau');
@@ -145,8 +146,7 @@ describe('App', () => {
   });
 
   it('étape 5 : recherche insensible aux accents, avec trois modes', async () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+    await renderDev();
     await screen.findByText('Échantillon de 3 prénoms');
     const input = screen.getByLabelText('Recherche brute');
     const summary = screen.getByTestId('query-summary');
@@ -170,8 +170,7 @@ describe('App', () => {
   });
 
   it('étape 6 : chaque filtre a son contrôle et met à jour le nombre de résultats', async () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+    await renderDev();
     await screen.findByText('Échantillon de 3 prénoms');
     const summary = screen.getByTestId('filters-summary');
     expect(summary).toHaveTextContent('3 résultats sur 3 · 0 filtre actif');
@@ -199,8 +198,7 @@ describe('App', () => {
   });
 
   it('étape 7 : sélecteur de tri et de sens', async () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+    await renderDev();
     await screen.findByText('Échantillon de 3 prénoms');
     const names = () =>
       within(screen.getByTestId('sort-results'))
@@ -219,8 +217,7 @@ describe('App', () => {
   });
 
   it('étape 8 : indique la mise en page et propose des fiches d’exemple', async () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+    await renderDev();
     await screen.findByText('Échantillon de 3 prénoms');
     expect(screen.getByTestId('layout-mode')).toHaveTextContent('téléphone');
     expect(screen.getByRole('link', { name: 'Camille' })).toHaveAttribute(
@@ -234,8 +231,7 @@ describe('App', () => {
   });
 
   it('étape 9 : réglages de mouvement et notification d’exemple', async () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+    await renderDev();
     expect(screen.getByTestId('motion-Animations')).toHaveTextContent('complètes');
     fireEvent.click(screen.getByLabelText('Réduire les animations'));
     expect(screen.getByTestId('motion-Animations')).toHaveTextContent('réduites');
@@ -245,8 +241,7 @@ describe('App', () => {
   });
 
   it('étape 10 : affiche le lien de la vue en cours, les favoris et l’export', async () => {
-    window.location.hash = '#/dev';
-    render(<App />);
+    await renderDev();
     await screen.findByText('Échantillon de 3 prénoms');
     expect(screen.getByTestId('current-href')).toHaveAttribute('href', '#/');
     expect(screen.getByTestId('favorites-count')).toHaveTextContent('0 favori');
@@ -255,5 +250,15 @@ describe('App', () => {
       '#/?f.favorites=only',
     );
     expect(screen.getByRole('button', { name: 'Exporter' })).toBeEnabled();
+  });
+
+  it('étape 11 : mesure le temps de réponse sur l’appareil', async () => {
+    await renderDev();
+    await screen.findByText('Échantillon de 3 prénoms');
+    expect(screen.getByTestId('perf-load')).toHaveTextContent(/\d+ ms \(par le réseau\)/);
+    fireEvent.click(screen.getByRole('button', { name: 'Mesurer le temps de réponse' }));
+    const table = within(screen.getByTestId('perf-measures'));
+    expect(table.getAllByRole('row')).toHaveLength(7);
+    expect(table.getByRole('row', { name: /Filtre filles/ })).toHaveTextContent('dans le budget');
   });
 });

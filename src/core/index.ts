@@ -1,6 +1,7 @@
 export type { AnyFilter, Filter, FilterControlProps } from './filter';
-export { mergeSources } from './mergeSources';
+export { mergeSources, mergeSourcesSteps } from './mergeSources';
 export type { LoadedSource } from './mergeSources';
+export { runInSlices, runToEnd, SLICE_BUDGET_MS } from './slices';
 export { normalizeName } from './normalizeName';
 export { activeFilters, runQuery } from './query';
 export type { Query, QueryContext, SearchMode, SortDirection } from './query';

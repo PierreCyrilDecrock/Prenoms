@@ -148,15 +148,14 @@ export function buildInseeData(
   if (byId.size === 0) throw new Error('Aucune ligne exploitable dans le CSV.');
 
   const names: InseeNameRow[] = [...byId.entries()]
-    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-    .map(([, acc]) => {
+    .map(([id, acc]) => {
       // Graphie la plus fréquente ; à égalité, la première dans l'ordre alphabétique.
       const [variant] = [...acc.variants.entries()].sort(
         ([nameA, countA], [nameB, countB]) => countB - countA || (nameA < nameB ? -1 : 1),
       )[0]!;
       const male = sum(acc.male.values());
       const female = sum(acc.female.values());
-      return [
+      const row: InseeNameRow = [
         toDisplayLabel(variant),
         male + female,
         male,
@@ -164,7 +163,12 @@ export function buildInseeData(
         toSeries(acc.male, yearMin),
         toSeries(acc.female, yearMin),
       ];
-    });
+      return { id, row };
+    })
+    // Du plus donné au moins donné, puis par identifiant : c'est l'ordre d'affichage par
+    // défaut, que le navigateur n'a donc pas à recalculer au chargement.
+    .sort((a, b) => b.row[1] - a.row[1] || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+    .map((item) => item.row);
 
   const meta = {
     formatVersion: INSEE_FORMAT_VERSION,

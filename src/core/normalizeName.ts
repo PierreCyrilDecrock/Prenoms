@@ -1,6 +1,7 @@
-const DASHES = /[‐-―−]/g;
-const APOSTROPHES = /[‘’ʼ`´]/g;
-const COMBINING_MARKS = /[̀-ͯ]/g;
+const DASHES = /[\u2010-\u2015\u2212]/g;
+const APOSTROPHES = /[\u2018\u2019\u02BC`\u00B4]/g;
+const COMBINING_MARKS = /[\u0300-\u036f]/g;
+const SIMPLE = /^[a-z]+$/;
 
 /**
  * Forme normalisée d'un prénom, utilisée comme identifiant et clé de fusion entre sources.
@@ -12,8 +13,10 @@ const COMBINING_MARKS = /[̀-ͯ]/g;
  *   aucun espace autour d'un tiret ou d'une apostrophe.
  */
 export function normalizeName(name: string): string {
-  return name
-    .toLowerCase()
+  const lower = name.toLowerCase();
+  // Cas le plus courant, traité sans les remplacements : uniquement des lettres sans accent.
+  if (SIMPLE.test(lower)) return lower;
+  return lower
     .replace(/œ/g, 'oe')
     .replace(/æ/g, 'ae')
     .normalize('NFD')

@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import {
   derivedFields,
-  mergeSources,
+  mergeSourcesSteps,
+  runInSlices,
   sources,
   type DataSource,
   type DerivedField,
@@ -62,9 +63,12 @@ export function createNamesStore(
             return { id: source.id, data };
           }),
         );
+        // Fusion et champs calculés par tranches courtes : le chargement ne fige pas
+        // l'interface, même sur un téléphone lent.
+        const entries = await runInSlices(mergeSourcesSteps(loaded, fieldList));
         set({
           status: 'ready',
-          entries: mergeSources(loaded, fieldList),
+          entries,
           loadedSources: loaded.map((source) => source.id),
           sourceMeta: Object.fromEntries(
             loaded.map((source) => [source.id, source.data.meta ?? {}]),

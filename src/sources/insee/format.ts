@@ -46,7 +46,7 @@ export interface InseeMeta {
 
 export interface InseeData {
   meta: InseeMeta;
-  /** Triées par identifiant normalisé. */
+  /** Triées par effectif total décroissant, puis par identifiant normalisé. */
   names: InseeNameRow[];
 }
 
