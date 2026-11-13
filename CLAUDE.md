@@ -107,6 +107,20 @@ tri inconnu, inactif ou dont une source requise manque est ignoré. Les prédica
 plus sélectif au moins sélectif d'après un échantillon. Budget : moins de 100 ms pour 5 filtres
 sur 50 000 entrées (testé).
 
+## Filtres
+
+Les 11 filtres de la v1 sont dans `src/filters/` (un fichier `.tsx` chacun, tests regroupés dans
+`filters.test.tsx`), répartis dans les groupes Texte, Popularité, Chronologie et Forme. Tout
+fichier `.tsx` de ce dossier qui n'est pas un test est pris pour un filtre : le code partagé vit
+ailleurs.
+
+- Briques de formulaire des contrôles : `src/ui/controls.tsx` (`TextField`, `NumberField`,
+  `ChoiceGroup`, `ToggleGroup`).
+- Aides de sérialisation : `src/state/urlParams.ts` (`parseRange`, `formatRange`, `parseChoice`).
+- `fromUrl` ne lève jamais : une valeur invalide donne `defaultParams`.
+- Tendance et popularité récente lisent `facts.insee.recent` et `facts.insee.previous`
+  (10 dernières années de la source et 10 précédentes, précalculées au chargement).
+
 ## Jetons de design
 
 Définis en variables CSS dans `src/index.css` et exposés à Tailwind par `@theme`

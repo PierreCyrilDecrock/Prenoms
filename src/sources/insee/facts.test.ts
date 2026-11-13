@@ -1,4 +1,11 @@
-import { birthsBetween, birthsInYear, countAt, getInseeFacts, toRecords } from './facts';
+import {
+  birthsBetween,
+  birthsInYear,
+  countAt,
+  getInseeFacts,
+  getInseeYearRange,
+  toRecords,
+} from './facts';
 import type { InseeFacts } from './facts';
 import type { InseeData } from './format';
 
@@ -48,6 +55,25 @@ describe('toRecords', () => {
 
   it('retient l’année la plus ancienne en cas d’égalité au pic', () => {
     expect(facts(2)).toMatchObject({ peakYear: 1903, peakCount: 5 });
+  });
+
+  it('calcule les naissances des 10 dernières années et des 10 précédentes', () => {
+    const wide = toRecords({
+      meta: { ...sampleData.meta, yearMin: 1900, yearMax: 1925 },
+      names: [
+        [
+          'Test',
+          60,
+          60,
+          0,
+          [4, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30],
+          [],
+        ],
+      ],
+    })[0]!.facts as InseeFacts;
+    // 1904 : 10 (hors fenêtres) ; 1915 : 20 (1906–1915) ; 1925 : 30 (1916–1925)
+    expect(wide).toMatchObject({ recent: 30, previous: 20 });
+    expect(getInseeYearRange()).toEqual({ min: 1900, max: 1925 });
   });
 
   it('expose des aides de lecture des séries', () => {

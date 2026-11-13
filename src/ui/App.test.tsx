@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { sampleData } from '@/sources/insee/facts.test';
 import { App } from '@/ui/App';
 import { parseHashPath } from '@/ui/useHashRoute';
@@ -79,7 +79,7 @@ describe('App', () => {
     render(<App />);
     expect(screen.getByTestId('registry-source')).toHaveTextContent('insee');
     expect(screen.getByTestId('registry-champ calculé')).toHaveTextContent('femaleShare');
-    expect(screen.getByTestId('registry-filtre')).toHaveTextContent('example');
+    expect(screen.getByTestId('registry-filtre')).toHaveTextContent('textSearch');
     expect(screen.getByTestId('registry-tri')).toHaveTextContent('example');
     fireEvent.change(screen.getByLabelText('Prénom à normaliser'), {
       target: { value: ' ÉLODIE  Noël ' },
@@ -153,10 +153,39 @@ describe('App', () => {
 
     fireEvent.change(input, { target: { value: 'ba' } });
     expect(summary).toHaveTextContent('0 résultat sur 3');
-    fireEvent.click(screen.getByLabelText('Contient'));
+    fireEvent.click(within(screen.getByTestId('raw-search')).getByLabelText('Contient'));
     expect(results).toHaveTextContent('Jean-Baptiste');
     fireEvent.change(input, { target: { value: 'LLE' } });
-    fireEvent.click(screen.getByLabelText('Finit par'));
+    fireEvent.click(within(screen.getByTestId('raw-search')).getByLabelText('Finit par'));
     expect(results).toHaveTextContent('Camille');
+  });
+
+  it('étape 6 : chaque filtre a son contrôle et met à jour le nombre de résultats', async () => {
+    window.location.hash = '#/dev';
+    render(<App />);
+    await screen.findByText('Échantillon de 3 prénoms');
+    const summary = screen.getByTestId('filters-summary');
+    expect(summary).toHaveTextContent('3 résultats sur 3 · 0 filtre actif');
+    for (const group of ['Texte', 'Popularité', 'Chronologie', 'Forme']) {
+      expect(screen.getByRole('region', { name: `Groupe ${group}` })).toBeInTheDocument();
+    }
+    expect(screen.getAllByTestId(/^filter-[a-zA-Z]+$/)).toHaveLength(11);
+
+    const gender = within(screen.getByTestId('filter-gender'));
+    fireEvent.click(gender.getByLabelText('Filles'));
+    expect(summary).toHaveTextContent('1 résultat sur 3 · 1 filtre actif');
+    expect(screen.getByTestId('filter-count-gender')).toHaveTextContent('seul : 1 · URL f');
+
+    fireEvent.click(gender.getByLabelText('Tous'));
+    fireEvent.click(within(screen.getByTestId('filter-accents')).getByLabelText('Sans accent'));
+    expect(summary).toHaveTextContent('2 résultats sur 3 · 1 filtre actif');
+    fireEvent.click(
+      within(screen.getByTestId('filter-compound')).getByLabelText('Composés uniquement'),
+    );
+    expect(summary).toHaveTextContent('1 résultat sur 3 · 2 filtres actifs');
+    expect(screen.getByTestId('filters-preview')).toHaveTextContent('Jean-Baptiste');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Tout réinitialiser' }));
+    expect(summary).toHaveTextContent('3 résultats sur 3 · 0 filtre actif');
   });
 });

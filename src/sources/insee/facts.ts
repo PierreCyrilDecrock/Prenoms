@@ -23,6 +23,20 @@ export interface InseeFacts {
   /** Année du plus grand effectif (les deux sexes confondus) ; la plus ancienne à égalité. */
   peakYear: number;
   peakCount: number;
+  /** Naissances sur les TREND_WINDOW dernières années de la source. */
+  recent: number;
+  /** Naissances sur les TREND_WINDOW années précédentes. */
+  previous: number;
+}
+
+/** Largeur, en années, des deux fenêtres comparées pour la tendance et la popularité récente. */
+export const TREND_WINDOW = 10;
+
+const yearRange = { min: 1900, max: new Date().getFullYear() };
+
+/** Plage d'années couverte par la source (connue après son chargement). */
+export function getInseeYearRange(): Readonly<{ min: number; max: number }> {
+  return yearRange;
 }
 
 /** Faits INSEE d'un prénom, s'il vient de cette source. */
@@ -58,7 +72,9 @@ const lastYearOf = (series: YearSeries) => series.start + series.counts.length -
 
 /** Transforme le fichier compact en enregistrements de source, avec les faits calculés. */
 export function toRecords(data: InseeData): SourceRecord[] {
-  const { yearMin } = data.meta;
+  const { yearMin, yearMax } = data.meta;
+  yearRange.min = yearMin;
+  yearRange.max = yearMax;
   return data.names.map(([label, total, male, female, maleSeries, femaleSeries]) => {
     const byYear = {
       male: toYearSeries(maleSeries, yearMin),
@@ -87,7 +103,11 @@ export function toRecords(data: InseeData): SourceRecord[] {
       lastYear,
       peakYear,
       peakCount,
+      recent: 0,
+      previous: 0,
     };
+    facts.recent = birthsBetween(facts, yearMax - TREND_WINDOW + 1, yearMax);
+    facts.previous = birthsBetween(facts, yearMax - 2 * TREND_WINDOW + 1, yearMax - TREND_WINDOW);
     return { label, facts };
   });
 }

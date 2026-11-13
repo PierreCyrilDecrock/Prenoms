@@ -24,7 +24,7 @@ export function DevStep5() {
   }, [entries, loadedSources, text, mode]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4" data-testid="raw-search">
       <label className="flex flex-col gap-1 text-sm">
         Recherche brute
         <input
